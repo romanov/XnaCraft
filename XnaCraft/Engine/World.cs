@@ -43,5 +43,10 @@ namespace XnaCraft.Engine
         {
             _chunks.Add(new Point(x, y), blocks);
         }
+
+        public bool HasChunk(int x, int y)
+        {
+            return _chunks.ContainsKey(new Point(x, y));
+        }
     }
 }

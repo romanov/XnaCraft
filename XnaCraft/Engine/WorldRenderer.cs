@@ -27,159 +27,143 @@ namespace XnaCraft.Engine
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             //_graphicsDevice.RasterizerState = new RasterizerState { FillMode = FillMode.WireFrame, CullMode = CullMode.None };
 
-            var chunks = new World.Chunk[3, 3];
-            chunks[0, 0] = world.GetChunk(0, 0);
-            chunks[0, 1] = world.GetChunk(0, 1);
-            chunks[0, 2] = world.GetChunk(0, 2);
-            chunks[1, 0] = world.GetChunk(1, 0);
-            chunks[1, 1] = world.GetChunk(1, 1);
-            chunks[1, 2] = world.GetChunk(1, 2);
-            chunks[2, 0] = world.GetChunk(2, 0);
-            chunks[2, 1] = world.GetChunk(2, 1);
-            chunks[2, 2] = world.GetChunk(2, 2);
-
-            var chunksWidth = chunks.GetLength(0);
-            var chunksHeight = chunks.GetLength(1);
+            var ccx = (int)Math.Floor(camera.Position.X / WorldGenerator.CHUNK_SIZE);
+            var ccy = (int)Math.Floor(camera.Position.Z / WorldGenerator.CHUNK_SIZE);
 
             var faces = 0;
 
-            foreach (var chunk in chunks)
+            var radius = 2;
+
+            for (var cx = ccx - radius; cx <= ccx + radius; cx++)
             {
-                for (var x = 0; x < WorldGenerator.CHUNK_SIZE; x++)
+                for (var cy = ccy - radius; cy <= ccy + radius; cy++)
                 {
-                    for (var y = 0; y < WorldGenerator.CHUNK_SIZE; y++)
+                    var chunk = world.GetChunk(cx, cy);
+
+                    for (var x = 0; x < WorldGenerator.CHUNK_SIZE; x++)
                     {
-                        for (var z = 0; z < WorldGenerator.CHUNK_SIZE; z++)
+                        for (var y = 0; y < WorldGenerator.CHUNK_SIZE; y++)
                         {
-                            var descriptor = chunk.Blocks[x, y, z];
-
-                            if (descriptor != null)
+                            for (var z = 0; z < WorldGenerator.CHUNK_SIZE; z++)
                             {
-                                var position = new Vector3(chunk.X * WorldGenerator.CHUNK_SIZE + x, y, chunk.Y * WorldGenerator.CHUNK_SIZE + z);
+                                var descriptor = chunk.Blocks[x, y, z];
 
-                                var top = y < WorldGenerator.CHUNK_SIZE - 1 ? chunk.Blocks[x, y + 1, z] : null;
-                                var bottom = y > 0 ? chunk.Blocks[x, y - 1, z] : null;
-                                var front = z > 0 ? chunk.Blocks[x, y, z - 1] : null;
-                                var back = z < WorldGenerator.CHUNK_SIZE - 1 ? chunk.Blocks[x, y, z + 1] : null;
-                                var left = x > 0 ? chunk.Blocks[x - 1, y, z] : null;
-                                var right = x < WorldGenerator.CHUNK_SIZE - 1 ? chunk.Blocks[x + 1, y, z] : null;
+                                if (descriptor != null)
+                                {
+                                    var position = new Vector3(chunk.X * WorldGenerator.CHUNK_SIZE + x, y, chunk.Y * WorldGenerator.CHUNK_SIZE + z);
 
-                                if (top == null)
-                                {
-                                    _blockRenderer.AddFace(BlockGeometry.TopFaceOffset, position, descriptor.TextureTop);
-                                    faces++;
-                                }
-                                if (bottom == null && y != 0)
-                                {
-                                    _blockRenderer.AddFace(BlockGeometry.BottomFaceOffset, position, descriptor.TextureBottom);
-                                    faces++;
-                                }
-                                if (front == null)
-                                {
-                                    var draw = false;
+                                    var top = y < WorldGenerator.CHUNK_SIZE - 1 ? chunk.Blocks[x, y + 1, z] : null;
+                                    var bottom = y > 0 ? chunk.Blocks[x, y - 1, z] : null;
+                                    var front = z > 0 ? chunk.Blocks[x, y, z - 1] : null;
+                                    var back = z < WorldGenerator.CHUNK_SIZE - 1 ? chunk.Blocks[x, y, z + 1] : null;
+                                    var left = x > 0 ? chunk.Blocks[x - 1, y, z] : null;
+                                    var right = x < WorldGenerator.CHUNK_SIZE - 1 ? chunk.Blocks[x + 1, y, z] : null;
 
-                                    if (z == 0)
+                                    if (top == null)
                                     {
-                                        if (chunk.Y > 0)
+                                        _blockRenderer.AddFace(BlockGeometry.TopFaceOffset, position, descriptor.TextureTop);
+                                        faces++;
+                                    }
+                                    if (bottom == null && y != 0)
+                                    {
+                                        _blockRenderer.AddFace(BlockGeometry.BottomFaceOffset, position, descriptor.TextureBottom);
+                                        faces++;
+                                    }
+                                    if (front == null)
+                                    {
+                                        var draw = false;
+
+                                        if (z == 0)
                                         {
-                                            var neighbourChunk = chunks[chunk.X, chunk.Y - 1];
+                                            var neighbourChunk = world.GetChunk(chunk.X, chunk.Y - 1);
 
                                             if (neighbourChunk.Blocks != null)
                                             {
                                                 draw = neighbourChunk.Blocks[x, y, WorldGenerator.CHUNK_SIZE - 1] == null;
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        draw = true;
-                                    }
-
-                                    if (draw)
-                                    {
-                                        _blockRenderer.AddFace(BlockGeometry.FrontFaceOffset, position, descriptor.TextureSide);
-                                        faces++;
-                                    }
-                                }
-                                if (back == null)
-                                {
-                                    var draw = false;
-
-                                    if (z == WorldGenerator.CHUNK_SIZE - 1)
-                                    {
-                                        if (chunk.Y < chunksHeight - 1)
+                                        else
                                         {
-                                            var neighbourChunk = chunks[chunk.X, chunk.Y + 1];
+                                            draw = true;
+                                        }
+
+                                        if (draw)
+                                        {
+                                            _blockRenderer.AddFace(BlockGeometry.FrontFaceOffset, position, descriptor.TextureSide);
+                                            faces++;
+                                        }
+                                    }
+                                    if (back == null)
+                                    {
+                                        var draw = false;
+
+                                        if (z == WorldGenerator.CHUNK_SIZE - 1)
+                                        {
+                                            var neighbourChunk = world.GetChunk(chunk.X, chunk.Y + 1);
 
                                             if (neighbourChunk.Blocks != null)
                                             {
                                                 draw = neighbourChunk.Blocks[x, y, 0] == null;
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        draw = true;
-                                    }
-
-                                    if (draw)
-                                    {
-                                        _blockRenderer.AddFace(BlockGeometry.BackFaceOffset, position, descriptor.TextureSide);
-                                        faces++;
-                                    }
-                                }
-                                if (left == null)
-                                {
-                                    var draw = false;
-
-                                    if (x == 0)
-                                    {
-                                        if (chunk.X > 0)
+                                        else
                                         {
-                                            var neighbourChunk = chunks[chunk.X - 1, chunk.Y];
+                                            draw = true;
+                                        }
+
+                                        if (draw)
+                                        {
+                                            _blockRenderer.AddFace(BlockGeometry.BackFaceOffset, position, descriptor.TextureSide);
+                                            faces++;
+                                        }
+                                    }
+                                    if (left == null)
+                                    {
+                                        var draw = false;
+
+                                        if (x == 0)
+                                        {
+                                            var neighbourChunk = world.GetChunk(chunk.X - 1, chunk.Y);
 
                                             if (neighbourChunk.Blocks != null)
                                             {
                                                 draw = neighbourChunk.Blocks[WorldGenerator.CHUNK_SIZE - 1, y, z] == null;
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        draw = true;
-                                    }
-
-                                    if (draw)
-                                    {
-                                        _blockRenderer.AddFace(BlockGeometry.LeftFaceOffset, position, descriptor.TextureSide);
-                                        faces++;
-                                    }
-                                }
-                                if (right == null)
-                                {
-                                    var draw = false;
-
-                                    if (x == WorldGenerator.CHUNK_SIZE - 1)
-                                    {
-                                        if (chunk.X < chunksWidth - 1)
+                                        else
                                         {
-                                            var neighbourChunk = chunks[chunk.X + 1, chunk.Y];
+                                            draw = true;
+                                        }
+
+                                        if (draw)
+                                        {
+                                            _blockRenderer.AddFace(BlockGeometry.LeftFaceOffset, position, descriptor.TextureSide);
+                                            faces++;
+                                        }
+                                    }
+                                    if (right == null)
+                                    {
+                                        var draw = false;
+
+                                        if (x == WorldGenerator.CHUNK_SIZE - 1)
+                                        {
+                                            var neighbourChunk = world.GetChunk(chunk.X + 1, chunk.Y);
 
                                             if (neighbourChunk.Blocks != null)
                                             {
                                                 draw = neighbourChunk.Blocks[0, y, z] == null;
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        draw = true;
-                                    }
+                                        else
+                                        {
+                                            draw = true;
+                                        }
 
-                                    if (draw)
-                                    {
-                                        _blockRenderer.AddFace(BlockGeometry.RightFaceOffset, position, descriptor.TextureSide);
-                                        faces++;
+                                        if (draw)
+                                        {
+                                            _blockRenderer.AddFace(BlockGeometry.RightFaceOffset, position, descriptor.TextureSide);
+                                            faces++;
+                                        }
                                     }
                                 }
                             }

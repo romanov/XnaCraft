@@ -22,6 +22,7 @@ namespace XnaCraft
         private World _world;
         private WorldGenerator _worldGenerator;
         private WorldRenderer _worldRenderer;
+        private DiagnosticsService _diagnosticsService;
 
         public XnaCraftGame()
         {
@@ -32,10 +33,13 @@ namespace XnaCraft
 
             Content.RootDirectory = "Content";
 
+#if DEBUG
             IsFixedTimeStep = false;
             _graphics.SynchronizeWithVerticalRetrace = false;
+#endif
 
-            Services.AddService(typeof(DiagnosticsService), new DiagnosticsService());
+            _diagnosticsService = new DiagnosticsService();
+            Services.AddService(typeof(DiagnosticsService), _diagnosticsService);
             Components.Add(new DiagnosticsRenderer(this));
         }
 
@@ -58,23 +62,11 @@ namespace XnaCraft
             _world = new World();
             _worldGenerator = new WorldGenerator(Content);
             _worldRenderer = new WorldRenderer(this, GraphicsDevice);
-
-            _world.AddChunk(0, 0, _worldGenerator.GenerateChunk(0, 0));
-            _world.AddChunk(0, 1, _worldGenerator.GenerateChunk(0, 1));
-            _world.AddChunk(0, 2, _worldGenerator.GenerateChunk(0, 2));
-            _world.AddChunk(1, 0, _worldGenerator.GenerateChunk(1, 0));
-            _world.AddChunk(1, 1, _worldGenerator.GenerateChunk(1, 1));
-            _world.AddChunk(1, 2, _worldGenerator.GenerateChunk(1, 2));
-            _world.AddChunk(2, 0, _worldGenerator.GenerateChunk(2, 0));
-            _world.AddChunk(2, 1, _worldGenerator.GenerateChunk(2, 1));
-            _world.AddChunk(2, 2, _worldGenerator.GenerateChunk(2, 2));
         }
 
         protected override void UnloadContent()
         {
         }
-
-
 
         protected override void Update(GameTime gameTime)
         {
@@ -113,13 +105,30 @@ namespace XnaCraft
                     moveVector.Y = -1;
                 }
 
-                var center = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
-                var mousePos = new Vector2(mouseState.X, mouseState.Y);
-                var offset = mousePos - center;
+                var mouseOffsetX = mouseState.X - GraphicsDevice.Viewport.Width / 2;
+                var mouseOffsetY = mouseState.Y - GraphicsDevice.Viewport.Height / 2;
 
-                Mouse.SetPosition((int)center.X, (int)center.Y);
+                _camera.Update(gameTime, mouseOffsetX, mouseOffsetY, moveVector);
 
-                _camera.Update(gameTime, offset.X, offset.Y, moveVector);
+                Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+
+                var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_SIZE);
+                var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_SIZE);
+
+                _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
+
+                var radius = 2;
+
+                for (var x = cx - radius; x <= cx + radius; x++)
+                {
+                    for (var y = cy - radius; y <= cy + radius; y++)
+                    {
+                        if (!_world.HasChunk(x, y))
+                        {
+                            _world.AddChunk(x, y, _worldGenerator.GenerateChunk(x, y));
+                        }
+                    }
+                }
             }
 
             base.Update(gameTime);

@@ -52,12 +52,12 @@ namespace XnaCraft.Diagnostics
             _spriteBatch.Begin();
             _spriteBatch.DrawString(_spriteFont, String.Format("FPS: {0}", _frameRate), new Vector2(5, 5), Color.White);
 
-            var offset = 25;
+            var offset = 20;
 
             foreach (var counter in _diagnosticsService.GetInfoValues())
             {
                 _spriteBatch.DrawString(_spriteFont, String.Format("{0}: {1}", counter.Key, counter.Value), new Vector2(5, offset), Color.White);
-                offset += 20;
+                offset += 15;
             }
 
             _spriteBatch.End();

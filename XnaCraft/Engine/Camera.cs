@@ -15,11 +15,19 @@ namespace XnaCraft.Engine
         private float _leftRightRotation = MathHelper.ToRadians(-135);
         private float _upDownRotation = MathHelper.ToRadians(-20);
 
-        private float _moveSpeed = 3.0f;
+        private float _moveSpeed = 5.0f;
         private float _rotationSpeed = MathHelper.PiOver4;
 
         public Matrix View { get; set; }
         public Matrix Projection { get; set; }
+
+        public Vector3 Position
+        {
+            get
+            {
+                return _position;
+            }
+        }
 
         public Camera(GraphicsDevice device)
         {
