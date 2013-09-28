@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace XnaCraft.Engine
 {
@@ -13,8 +14,9 @@ namespace XnaCraft.Engine
 
         private BlockGeometry _geometry;
         private BasicEffect _effect;
+        private Texture2D _textureAtlas;
 
-        public BlockRenderer(GraphicsDevice device)
+        public BlockRenderer(GraphicsDevice device, ContentManager contentManager)
         {
             _device = device;
 
@@ -22,6 +24,8 @@ namespace XnaCraft.Engine
 
             _effect = new BasicEffect(_device);
             _effect.TextureEnabled = true;
+
+            _textureAtlas = contentManager.Load<Texture2D>("blocks");
         }
 
         struct FaceDescriptor
@@ -50,11 +54,10 @@ namespace XnaCraft.Engine
 
             _effect.View = camera.View;
             _effect.Projection = camera.Projection;
+            _effect.Texture = _textureAtlas;
 
             foreach (var faceToRender in _facesToRender)
             {
-                _effect.Texture = faceToRender.Key;
-
                 foreach (var face in faceToRender.Value)
                 {
                     _effect.World = Matrix.CreateTranslation(face.Position);

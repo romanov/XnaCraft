@@ -17,7 +17,7 @@ namespace XnaCraft.Engine
         public WorldRenderer(Game game, GraphicsDevice graphicsDevice)
         {
             _graphicsDevice = graphicsDevice;
-            _blockRenderer = new BlockRenderer(_graphicsDevice);
+            _blockRenderer = new BlockRenderer(_graphicsDevice, game.Content);
             _diagnosticsService = (DiagnosticsService)game.Services.GetService(typeof(DiagnosticsService));
         }
 

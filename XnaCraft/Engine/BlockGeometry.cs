@@ -44,10 +44,12 @@ namespace XnaCraft.Engine
             var normalLeft = new Vector3(-1.0f, 0.0f, 0.0f);
             var normalRight = new Vector3(1.0f, 0.0f, 0.0f);
 
-            var textureTopLeft = new Vector2(1.0f, 0.0f);
-            var textureTopRight = new Vector2(0.0f, 0.0f);
-            var textureBottomLeft = new Vector2(1.0f, 1.0f);
-            var textureBottomRight = new Vector2(0.0f, 1.0f);
+            var texture = 1;
+
+            var textureTopLeft = new Vector2((texture + 1) * 0.25f, 0.0f);
+            var textureTopRight = new Vector2(texture * 0.25f, 0.0f);
+            var textureBottomLeft = new Vector2((texture + 1) * 0.25f, 1.0f);
+            var textureBottomRight = new Vector2(texture * 0.25f, 1.0f);
 
             return new VertexPositionNormalTexture[]
             {
