@@ -20,14 +20,14 @@ namespace XnaCraft.Engine
         public WorldGenerator(ContentManager contentManager)
         {
             _grassDescriptor = new BlockDescriptor(BlockType.Grass,
-                contentManager.Load<Texture2D>("grass_top"),
-                contentManager.Load<Texture2D>("grass_bottom"),
-                contentManager.Load<Texture2D>("grass_side"));
+                BlockFaceTexture.GrassTop,
+                BlockFaceTexture.Dirt,
+                BlockFaceTexture.GrassSide);
 
             _dirtDescriptor = new BlockDescriptor(BlockType.Dirt,
-                contentManager.Load<Texture2D>("grass_bottom"),
-                contentManager.Load<Texture2D>("grass_bottom"),
-                contentManager.Load<Texture2D>("grass_bottom"));
+                BlockFaceTexture.Dirt,
+                BlockFaceTexture.Dirt,
+                BlockFaceTexture.Dirt);
         }
 
         public BlockDescriptor[, ,] GenerateChunk(int cx, int cy)

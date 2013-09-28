@@ -4,37 +4,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace XnaCraft.Engine
 {
     class World
     {
-        private readonly Dictionary<Point, BlockDescriptor[, ,]> _chunks = new Dictionary<Point, BlockDescriptor[, ,]>();
-
-        public struct Chunk
-        {
-            public int X;
-            public int Y;
-            public BlockDescriptor[, ,] Blocks;
-
-            public static Chunk Empty = new Chunk { X = 0, Y = 0, Blocks = null };
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 23 + X;
-                    hash = hash * 23 + Y;
-                    return hash;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                return base.Equals(obj);
-            }
-        }
+        private readonly Dictionary<Point, Chunk> _chunks = new Dictionary<Point, Chunk>();
 
         public World()
         {
@@ -43,21 +19,21 @@ namespace XnaCraft.Engine
 
         public Chunk GetChunk(int x, int y)
         {
-            var blocks = default(BlockDescriptor[, ,]);
+            var chunk = default(Chunk);
 
-            if (_chunks.TryGetValue(new Point(x, y), out blocks))
+            if (_chunks.TryGetValue(new Point(x, y), out chunk))
             {
-                return new Chunk { X = x, Y = y, Blocks = blocks };
+                return chunk;
             }
             else
             {
-                return Chunk.Empty;
+                return null;
             }
         }
 
-        public void AddChunk(int x, int y, BlockDescriptor[, ,] blocks)
+        public void AddChunk(int x, int y, Chunk chunk)
         {
-            _chunks.Add(new Point(x, y), blocks);
+            _chunks.Add(new Point(x, y), chunk);
         }
 
         public bool HasChunk(int x, int y)

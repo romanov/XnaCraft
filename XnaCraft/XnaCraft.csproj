@@ -108,13 +108,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostics\DiagnosticsService.cs" />
+    <Compile Include="Engine\BlockFaceTexture.cs" />
     <Compile Include="Engine\Camera.cs" />
-    <Compile Include="Engine\Block.cs" />
     <Compile Include="Engine\BlockDescriptor.cs" />
-    <Compile Include="Engine\BlockGeometry.cs" />
-    <Compile Include="Engine\BlockRenderer.cs" />
     <Compile Include="Engine\BlockType.cs" />
     <Compile Include="Diagnostics\DiagnosticsRenderer.cs" />
+    <Compile Include="Engine\Chunk.cs" />
     <Compile Include="Engine\PerlinGenerator.cs" />
     <Compile Include="Engine\Utils.cs" />
     <Compile Include="Engine\World.cs" />

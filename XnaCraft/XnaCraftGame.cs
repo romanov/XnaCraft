@@ -125,7 +125,12 @@ namespace XnaCraft
                     {
                         if (!_world.HasChunk(x, y))
                         {
-                            _world.AddChunk(x, y, _worldGenerator.GenerateChunk(x, y));
+                            var blocks = _worldGenerator.GenerateChunk(x, y);
+                            var chunk = new Chunk(GraphicsDevice, x, y, blocks);
+
+                            chunk.Build();
+
+                            _world.AddChunk(x, y, chunk);
                         }
                     }
                 }
