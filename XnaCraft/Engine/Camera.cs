@@ -43,8 +43,8 @@ namespace XnaCraft.Engine
 
             var rotation = Matrix.CreateRotationX(_upDownRotation) * Matrix.CreateRotationY(_leftRightRotation);
             var direction = Vector3.Transform(Vector3.Forward, rotation);
-            
-            _position += Vector3.Transform(moveVector * _moveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, rotation);
+
+            _position += Vector3.Transform(moveVector * _moveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, Matrix.CreateRotationY(_leftRightRotation));
 
             View = Matrix.CreateLookAt(_position, _position + direction, Vector3.Transform(Vector3.Up, rotation));
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, _device.Viewport.AspectRatio, 1.0f, 1000);
