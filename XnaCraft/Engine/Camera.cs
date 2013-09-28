@@ -16,7 +16,7 @@ namespace XnaCraft.Engine
         private float _upDownRotation = MathHelper.ToRadians(-20);
 
         private float _moveSpeed = 5.0f;
-        private float _rotationSpeed = MathHelper.PiOver4;
+        private float _rotationSpeed = 0.1f;
 
         public Matrix View { get; set; }
         public Matrix Projection { get; set; }
@@ -36,8 +36,8 @@ namespace XnaCraft.Engine
 
         public void Update(GameTime gameTime, float dx, float dy, Vector3 moveVector)
         {
-            _leftRightRotation -= dx * (float)gameTime.ElapsedGameTime.TotalSeconds * _rotationSpeed;
-            _upDownRotation -= dy * (float)gameTime.ElapsedGameTime.TotalSeconds * _rotationSpeed;
+            _leftRightRotation -= (dx / 50)  * _rotationSpeed;
+            _upDownRotation -= (dy / 50) * _rotationSpeed;
 
             _upDownRotation = MathHelper.Clamp(_upDownRotation, -MathHelper.PiOver2, MathHelper.PiOver2);
 
