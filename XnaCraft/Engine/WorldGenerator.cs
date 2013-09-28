@@ -15,7 +15,7 @@ namespace XnaCraft.Engine
         private readonly BlockDescriptor _grassDescriptor;
         private readonly BlockDescriptor _dirtDescriptor;
 
-        private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(RandomHelper.GetRandomInteger());
+        private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(Utils.GetRandomInteger());
 
         public WorldGenerator(ContentManager contentManager)
         {

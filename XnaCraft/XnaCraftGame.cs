@@ -117,7 +117,7 @@ namespace XnaCraft
 
                 _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
 
-                var radius = 2;
+                var radius = 5;
 
                 for (var x = cx - radius; x <= cx + radius; x++)
                 {

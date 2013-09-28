@@ -18,6 +18,22 @@ namespace XnaCraft.Engine
             public BlockDescriptor[, ,] Blocks;
 
             public static Chunk Empty = new Chunk { X = 0, Y = 0, Blocks = null };
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = hash * 23 + X;
+                    hash = hash * 23 + Y;
+                    return hash;
+                }
+            }
+
+            public override bool Equals(object obj)
+            {
+                return base.Equals(obj);
+            }
         }
 
         public World()
