@@ -49,16 +49,21 @@ namespace XnaCraft.Diagnostics
         {
             _frameCounter++;
 
-            _spriteBatch.Begin();
-            _spriteBatch.DrawString(_spriteFont, String.Format("FPS: {0}", _frameRate), new Vector2(5, 5), Color.White);
 
-            var offset = 20;
+
+            _spriteBatch.Begin();
+
+
+            var sb = new StringBuilder();
+
+            sb.AppendFormat("FPS: {0}", _frameRate);
 
             foreach (var counter in _diagnosticsService.GetInfoValues())
             {
-                _spriteBatch.DrawString(_spriteFont, String.Format("{0}: {1}", counter.Key, counter.Value), new Vector2(5, offset), Color.White);
-                offset += 15;
+                sb.AppendLine().AppendFormat("{0}: {1}", counter.Key, counter.Value);
             }
+
+            _spriteBatch.DrawString(_spriteFont, sb, new Vector2(5, 5), Color.White);
 
             _spriteBatch.End();
         }
