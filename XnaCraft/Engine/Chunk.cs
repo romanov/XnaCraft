@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Threading;
 
 namespace XnaCraft.Engine
 {
@@ -13,8 +14,13 @@ namespace XnaCraft.Engine
         public int Y { get; private set; }
         public BlockDescriptor[, ,] Blocks { get; private set; }
         public VertexBuffer Buffer { get; private set; }
+        public BoundingBox BoundingBox { get; private set; }
 
         private readonly GraphicsDevice _device;
+
+        private volatile bool _isBuilt = false;
+
+        public bool IsBuilt { get { return _isBuilt; } }
 
         public Chunk(GraphicsDevice device, int x, int y, BlockDescriptor[, ,] blocks)
         {
@@ -22,10 +28,15 @@ namespace XnaCraft.Engine
             Y = y;
             Blocks = blocks;
 
+            var bbMin = new Vector3(x * WorldGenerator.CHUNK_SIZE, 0, y * WorldGenerator.CHUNK_SIZE);
+            var bbMax = bbMin + new Vector3(WorldGenerator.CHUNK_SIZE, WorldGenerator.CHUNK_SIZE, WorldGenerator.CHUNK_SIZE);
+
+            BoundingBox = new Microsoft.Xna.Framework.BoundingBox(bbMin, bbMax);
+
             _device = device;
         }
 
-        public void Build()
+        public void Build(World world)
         {
             var faces = new List<VertexPositionNormalTexture>();
 
@@ -60,16 +71,16 @@ namespace XnaCraft.Engine
                             {
                                 var draw = false;
 
-                                //if (z == 0)
-                                //{
-                                //    var neighbourChunk = world.GetChunk(chunk.X, chunk.Y - 1);
+                                if (z == 0)
+                                {
+                                    var neighbourChunk = world.GetChunk(X, Y - 1);
 
-                                //    if (neighbourChunk.Blocks != null)
-                                //    {
-                                //        draw = neighbourChunk.Blocks[x, y, WorldGenerator.CHUNK_SIZE - 1] == null;
-                                //    }
-                                //}
-                                //else
+                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    {
+                                        draw = neighbourChunk.Blocks[x, y, WorldGenerator.CHUNK_SIZE - 1] == null;
+                                    }
+                                }
+                                else
                                 {
                                     draw = true;
                                 }
@@ -83,16 +94,16 @@ namespace XnaCraft.Engine
                             {
                                 var draw = false;
 
-                                //if (z == WorldGenerator.CHUNK_SIZE - 1)
-                                //{
-                                //    var neighbourChunk = world.GetChunk(chunk.X, chunk.Y + 1);
+                                if (z == WorldGenerator.CHUNK_SIZE - 1)
+                                {
+                                    var neighbourChunk = world.GetChunk(X, Y + 1);
 
-                                //    if (neighbourChunk.Blocks != null)
-                                //    {
-                                //        draw = neighbourChunk.Blocks[x, y, 0] == null;
-                                //    }
-                                //}
-                                //else
+                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    {
+                                        draw = neighbourChunk.Blocks[x, y, 0] == null;
+                                    }
+                                }
+                                else
                                 {
                                     draw = true;
                                 }
@@ -106,16 +117,16 @@ namespace XnaCraft.Engine
                             {
                                 var draw = false;
 
-                                //if (x == 0)
-                                //{
-                                //    var neighbourChunk = world.GetChunk(chunk.X - 1, chunk.Y);
+                                if (x == 0)
+                                {
+                                    var neighbourChunk = world.GetChunk(X - 1, Y);
 
-                                //    if (neighbourChunk.Blocks != null)
-                                //    {
-                                //        draw = neighbourChunk.Blocks[WorldGenerator.CHUNK_SIZE - 1, y, z] == null;
-                                //    }
-                                //}
-                                //else
+                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    {
+                                        draw = neighbourChunk.Blocks[WorldGenerator.CHUNK_SIZE - 1, y, z] == null;
+                                    }
+                                }
+                                else
                                 {
                                     draw = true;
                                 }
@@ -129,16 +140,16 @@ namespace XnaCraft.Engine
                             {
                                 var draw = false;
 
-                                //if (x == WorldGenerator.CHUNK_SIZE - 1)
-                                //{
-                                //    var neighbourChunk = world.GetChunk(chunk.X + 1, chunk.Y);
+                                if (x == WorldGenerator.CHUNK_SIZE - 1)
+                                {
+                                    var neighbourChunk = world.GetChunk(X + 1, Y);
 
-                                //    if (neighbourChunk.Blocks != null)
-                                //    {
-                                //        draw = neighbourChunk.Blocks[0, y, z] == null;
-                                //    }
-                                //}
-                                //else
+                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    {
+                                        draw = neighbourChunk.Blocks[0, y, z] == null;
+                                    }
+                                }
+                                else
                                 {
                                     draw = true;
                                 }
@@ -156,6 +167,8 @@ namespace XnaCraft.Engine
 
                 Buffer = new VertexBuffer(_device, VertexPositionNormalTexture.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
                 Buffer.SetData(vertices);
+
+                _isBuilt = true;
             }
         }
 
@@ -287,6 +300,11 @@ namespace XnaCraft.Engine
                 BottomLeft = new Vector2(uEnd, 1.0f),
                 BottomRight = new Vector2(uStart, 1.0f),
             };
+        }
+
+        internal void SetBlocks(BlockDescriptor[, ,] blocks)
+        {
+            Blocks = blocks;
         }
     }
 }

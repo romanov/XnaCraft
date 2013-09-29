@@ -28,9 +28,11 @@ namespace XnaCraft.Engine
 
         private IEnumerable<Chunk> GetVisibleChunks(World world, Camera camera)
         {
+            var viewFrustrum = new BoundingFrustum(camera.View * camera.Projection);
+
             var ccx = (int)Math.Floor(camera.Position.X / WorldGenerator.CHUNK_SIZE);
             var ccy = (int)Math.Floor(camera.Position.Z / WorldGenerator.CHUNK_SIZE);
-            var radius = 5;
+            var radius = 10;
 
             var chunks = new HashSet<Chunk>();
 
@@ -40,7 +42,7 @@ namespace XnaCraft.Engine
                 {
                     var chunk = world.GetChunk(cx, cy);
 
-                    if (chunk != null)
+                    if (chunk != null && chunk.IsBuilt && chunk.BoundingBox.Intersects(viewFrustrum))
                     {
                         chunks.Add(chunk);
                     }
@@ -56,7 +58,7 @@ namespace XnaCraft.Engine
         {
             _graphicsDevice.BlendState = BlendState.Opaque;
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            //_graphicsDevice.RasterizerState = new RasterizerState { FillMode = FillMode.WireFrame, CullMode = CullMode.None };
+            _graphicsDevice.RasterizerState = new RasterizerState { FillMode = FillMode.WireFrame, CullMode = CullMode.None };
 
             var faces = 0;
 

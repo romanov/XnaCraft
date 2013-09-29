@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using XnaCraft.Diagnostics;
 using XnaCraft.Engine;
+using System.Threading.Tasks;
 
 namespace XnaCraft
 {
@@ -117,7 +118,7 @@ namespace XnaCraft
 
                 _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
 
-                var radius = 5;
+                var radius = 10;
 
                 for (var x = cx - radius; x <= cx + radius; x++)
                 {
@@ -125,12 +126,16 @@ namespace XnaCraft
                     {
                         if (!_world.HasChunk(x, y))
                         {
-                            var blocks = _worldGenerator.GenerateChunk(x, y);
-                            var chunk = new Chunk(GraphicsDevice, x, y, blocks);
-
-                            chunk.Build();
-
+                            var chunk = new Chunk(GraphicsDevice, x, y, null);
                             _world.AddChunk(x, y, chunk);
+
+                            Task.Factory.StartNew(() =>
+                            {
+                                var blocks = _worldGenerator.GenerateChunk(chunk.X, chunk.Y);
+
+                                chunk.SetBlocks(blocks);
+                                chunk.Build(_world);
+                            });
                         }
                     }
                 }

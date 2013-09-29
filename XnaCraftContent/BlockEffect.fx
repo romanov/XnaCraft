@@ -61,7 +61,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 color =  texColor * ambient;
     
     //return lerp(FogColor, color ,fog);
-	return texColor;
+	return color;
 }
 
 technique BlockTechnique
