@@ -32,19 +32,26 @@ namespace XnaCraft.Engine
 
             var ccx = (int)Math.Floor(camera.Position.X / WorldGenerator.CHUNK_SIZE);
             var ccy = (int)Math.Floor(camera.Position.Z / WorldGenerator.CHUNK_SIZE);
-            var radius = 10;
+            var radius = 14;
 
             var chunks = new HashSet<Chunk>();
+            var radiusSquared = radius * radius;
 
             for (var cx = ccx - radius; cx <= ccx + radius; cx++)
             {
                 for (var cy = ccy - radius; cy <= ccy + radius; cy++)
                 {
-                    var chunk = world.GetChunk(cx, cy);
+                    var dx = cx - ccx;
+                    var dy = cy - ccy;
 
-                    if (chunk != null && chunk.IsBuilt && chunk.BoundingBox.Intersects(viewFrustrum))
+                    if (dx * dx + dy * dy <= radiusSquared)
                     {
-                        chunks.Add(chunk);
+                        var chunk = world.GetChunk(cx, cy);
+
+                        if (chunk != null && chunk.IsBuilt && chunk.BoundingBox.Intersects(viewFrustrum))
+                        {
+                            chunks.Add(chunk);
+                        }
                     }
                 }
             }
@@ -58,16 +65,11 @@ namespace XnaCraft.Engine
         {
             _graphicsDevice.BlendState = BlendState.Opaque;
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            _graphicsDevice.RasterizerState = new RasterizerState { FillMode = FillMode.WireFrame, CullMode = CullMode.None };
+            //_graphicsDevice.RasterizerState = new RasterizerState { FillMode = FillMode.WireFrame, CullMode = CullMode.None };
 
             var faces = 0;
 
             var chunks = GetVisibleChunks(world, camera);
-
-            //_effect.World = Matrix.CreateTranslation(Vector3.Zero);
-            //_effect.View = camera.View;
-            //_effect.Projection = camera.Projection;
-            //_effect.Texture = _textureAtlas;
 
             _effect.Parameters["World"].SetValue(Matrix.Identity);
             _effect.Parameters["View"].SetValue(camera.View);

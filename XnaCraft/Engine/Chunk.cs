@@ -13,20 +13,22 @@ namespace XnaCraft.Engine
         public int X { get; private set; }
         public int Y { get; private set; }
         public BlockDescriptor[, ,] Blocks { get; private set; }
-        public VertexBuffer Buffer { get; private set; }
+        public VertexBuffer Buffer { get { return _buffer; } }
         public BoundingBox BoundingBox { get; private set; }
 
         private readonly GraphicsDevice _device;
 
+        private volatile VertexBuffer _buffer;
+        private volatile bool _isGenerated = false;
         private volatile bool _isBuilt = false;
 
+        public bool IsGenerated { get { return _isGenerated; } }
         public bool IsBuilt { get { return _isBuilt; } }
 
-        public Chunk(GraphicsDevice device, int x, int y, BlockDescriptor[, ,] blocks)
+        public Chunk(GraphicsDevice device, int x, int y)
         {
             X = x;
             Y = y;
-            Blocks = blocks;
 
             var bbMin = new Vector3(x * WorldGenerator.CHUNK_SIZE, 0, y * WorldGenerator.CHUNK_SIZE);
             var bbMax = bbMin + new Vector3(WorldGenerator.CHUNK_SIZE, WorldGenerator.CHUNK_SIZE, WorldGenerator.CHUNK_SIZE);
@@ -36,7 +38,14 @@ namespace XnaCraft.Engine
             _device = device;
         }
 
-        public void Build(World world)
+        public void SetBlocks(BlockDescriptor[, ,] blocks)
+        {
+            Blocks = blocks;
+            _isGenerated = true;
+        }
+
+        // TODO: split into smaller methods
+        public void Build(Dictionary<Point, Chunk> adjacentChunks)
         {
             var faces = new List<VertexPositionNormalTexture>();
 
@@ -73,11 +82,11 @@ namespace XnaCraft.Engine
 
                                 if (z == 0)
                                 {
-                                    var neighbourChunk = world.GetChunk(X, Y - 1);
+                                    var adjacentChunk = default(Chunk);
 
-                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    if (adjacentChunks.TryGetValue(new Point(X, Y - 1), out adjacentChunk))
                                     {
-                                        draw = neighbourChunk.Blocks[x, y, WorldGenerator.CHUNK_SIZE - 1] == null;
+                                        draw = adjacentChunk.Blocks[x, y, WorldGenerator.CHUNK_SIZE - 1] == null;
                                     }
                                 }
                                 else
@@ -87,7 +96,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    faces.AddRange(GenerateFrontFace(position, descriptor.TextureSide));
+                                    faces.AddRange(GenerateFrontFace(position, descriptor.TextureFront));
                                 }
                             }
                             if (back == null)
@@ -96,11 +105,11 @@ namespace XnaCraft.Engine
 
                                 if (z == WorldGenerator.CHUNK_SIZE - 1)
                                 {
-                                    var neighbourChunk = world.GetChunk(X, Y + 1);
+                                    var adjacentChunk = default(Chunk);
 
-                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    if (adjacentChunks.TryGetValue(new Point(X, Y + 1), out adjacentChunk))
                                     {
-                                        draw = neighbourChunk.Blocks[x, y, 0] == null;
+                                        draw = adjacentChunk.Blocks[x, y, 0] == null;
                                     }
                                 }
                                 else
@@ -110,7 +119,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    faces.AddRange(GenerateBackFace(position, descriptor.TextureSide));
+                                    faces.AddRange(GenerateBackFace(position, descriptor.TextureBack));
                                 }
                             }
                             if (left == null)
@@ -119,11 +128,11 @@ namespace XnaCraft.Engine
 
                                 if (x == 0)
                                 {
-                                    var neighbourChunk = world.GetChunk(X - 1, Y);
+                                    var adjacentChunk = default(Chunk);
 
-                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    if (adjacentChunks.TryGetValue(new Point(X - 1, Y), out adjacentChunk))
                                     {
-                                        draw = neighbourChunk.Blocks[WorldGenerator.CHUNK_SIZE - 1, y, z] == null;
+                                        draw = adjacentChunk.Blocks[WorldGenerator.CHUNK_SIZE - 1, y, z] == null;
                                     }
                                 }
                                 else
@@ -133,7 +142,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    faces.AddRange(GenerateLeftFace(position, descriptor.TextureSide));
+                                    faces.AddRange(GenerateLeftFace(position, descriptor.TextureLeft));
                                 }
                             }
                             if (right == null)
@@ -142,11 +151,11 @@ namespace XnaCraft.Engine
 
                                 if (x == WorldGenerator.CHUNK_SIZE - 1)
                                 {
-                                    var neighbourChunk = world.GetChunk(X + 1, Y);
+                                    var adjacentChunk = default(Chunk);
 
-                                    if (neighbourChunk != null && neighbourChunk.IsBuilt)
+                                    if (adjacentChunks.TryGetValue(new Point(X + 1, Y), out adjacentChunk))
                                     {
-                                        draw = neighbourChunk.Blocks[0, y, z] == null;
+                                        draw = adjacentChunk.Blocks[0, y, z] == null;
                                     }
                                 }
                                 else
@@ -156,7 +165,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    faces.AddRange(GenerateRightFace(position, descriptor.TextureSide));
+                                    faces.AddRange(GenerateRightFace(position, descriptor.TextureRight));
                                 }
                             }
                         }
@@ -165,13 +174,15 @@ namespace XnaCraft.Engine
 
                 var vertices = faces.ToArray();
 
-                Buffer = new VertexBuffer(_device, VertexPositionNormalTexture.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
-                Buffer.SetData(vertices);
-
+                var buffer = new VertexBuffer(_device, VertexPositionNormalTexture.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
+                buffer.SetData(vertices);
+                
+                _buffer = buffer;
                 _isBuilt = true;
             }
         }
 
+        // TODO: code clean-up
         Vector3 topLeftFront = new Vector3(-0.5f, 0.5f, -0.5f);
         Vector3 topLeftBack = new Vector3(-0.5f, 0.5f, 0.5f);
         Vector3 topRightFront = new Vector3(0.5f, 0.5f, -0.5f);
@@ -300,11 +311,6 @@ namespace XnaCraft.Engine
                 BottomLeft = new Vector2(uEnd, 1.0f),
                 BottomRight = new Vector2(uStart, 1.0f),
             };
-        }
-
-        internal void SetBlocks(BlockDescriptor[, ,] blocks)
-        {
-            Blocks = blocks;
         }
     }
 }

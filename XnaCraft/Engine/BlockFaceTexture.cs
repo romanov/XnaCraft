@@ -10,6 +10,11 @@ namespace XnaCraft.Engine
         GrassTop,
         Dirt,
         GrassSide,
-        Empty,
+        DebugTop,
+        DebugBottom,
+        DebugFront,
+        DebugBack,
+        DebugLeft,
+        DebugRight,
     }
 }

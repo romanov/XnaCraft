@@ -34,6 +34,19 @@ namespace XnaCraft.Engine
             }
         }
 
+        public Dictionary<Point, Chunk> GetAdjacentChunks(Chunk chunk)
+        {
+            var chunks = new[] 
+            { 
+                GetChunk(chunk.X, chunk.Y - 1),
+                GetChunk(chunk.X, chunk.Y + 1),
+                GetChunk(chunk.X - 1, chunk.Y),
+                GetChunk(chunk.X + 1, chunk.Y),
+            };
+
+            return chunks.Where(c => c != null).ToDictionary(c => new Point(c.X, c.Y));
+        }
+
         public void AddChunk(int x, int y, Chunk chunk)
         {
             lock (_chunks)

@@ -25,12 +25,24 @@ namespace XnaCraft
         private WorldRenderer _worldRenderer;
         private DiagnosticsService _diagnosticsService;
 
+        private readonly bool _isFullScreen = false;
+
         public XnaCraftGame()
         {
             _graphics = new GraphicsDeviceManager(this);
 
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferredBackBufferHeight = 720;
+            if (_isFullScreen)
+            {
+                _graphics.PreferredBackBufferWidth = 1920;
+                _graphics.PreferredBackBufferHeight = 1080;
+                _graphics.IsFullScreen = true;
+            }
+            else
+            {
+                _graphics.PreferredBackBufferWidth = 1280;
+                _graphics.PreferredBackBufferHeight = 720;
+                _graphics.IsFullScreen = false;
+            }
 
             Content.RootDirectory = "Content";
 
@@ -61,8 +73,10 @@ namespace XnaCraft
             _camera = new Camera(GraphicsDevice);
 
             _world = new World();
-            _worldGenerator = new WorldGenerator(Content);
+            _worldGenerator = new WorldGenerator(_world, GraphicsDevice, Content, _diagnosticsService);
             _worldRenderer = new WorldRenderer(this, GraphicsDevice);
+
+            GenerateArea(false);
         }
 
         protected override void UnloadContent()
@@ -113,35 +127,20 @@ namespace XnaCraft
 
                 Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
-                var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_SIZE);
-                var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_SIZE);
-
-                _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
-
-                var radius = 10;
-
-                for (var x = cx - radius; x <= cx + radius; x++)
-                {
-                    for (var y = cy - radius; y <= cy + radius; y++)
-                    {
-                        if (!_world.HasChunk(x, y))
-                        {
-                            var chunk = new Chunk(GraphicsDevice, x, y, null);
-                            _world.AddChunk(x, y, chunk);
-
-                            Task.Factory.StartNew(() =>
-                            {
-                                var blocks = _worldGenerator.GenerateChunk(chunk.X, chunk.Y);
-
-                                chunk.SetBlocks(blocks);
-                                chunk.Build(_world);
-                            });
-                        }
-                    }
-                }
+                GenerateArea(true);
             }
 
             base.Update(gameTime);
+        }
+
+        private void GenerateArea(bool buildAdjacent)
+        {
+            var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_SIZE);
+            var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_SIZE);
+
+            _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
+
+            _worldGenerator.GenerateArea(new Point(cx, cy), 15, buildAdjacent);
         }
 
         protected override void Draw(GameTime gameTime)

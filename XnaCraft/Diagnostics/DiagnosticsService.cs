@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections.Concurrent;
 
 namespace XnaCraft.Diagnostics
 {
     class DiagnosticsService
     {
-        Dictionary<string, object> _infoValues = new Dictionary<string, object>();
+        ConcurrentDictionary<string, object> _infoValues = new ConcurrentDictionary<string, object>();
 
         public IDictionary<string, object> GetInfoValues()
         {
@@ -16,14 +17,7 @@ namespace XnaCraft.Diagnostics
 
         public void SetInfoValue<T>(string key, T value)
         {
-            if (!_infoValues.ContainsKey(key))
-            {
-                _infoValues.Add(key, value);
-            }
-            else
-            {
-                _infoValues[key] = value;
-            }
+            _infoValues[key] = value;
         }
     }
 }
