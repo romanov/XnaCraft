@@ -21,11 +21,31 @@ namespace XnaCraft.Engine
         public Matrix View { get; set; }
         public Matrix Projection { get; set; }
 
+        public float LeftRightRotation
+        {
+            get
+            {
+                return _leftRightRotation;
+            }
+        }
+
+        public float UpDownRotation
+        {
+            get
+            {
+                return _upDownRotation;
+            }
+        }
+
         public Vector3 Position
         {
             get
             {
                 return _position;
+            }
+            set
+            {
+                _position = value;
             }
         }
 
@@ -34,7 +54,7 @@ namespace XnaCraft.Engine
             _device = device;
         }
 
-        public void Update(GameTime gameTime, float dx, float dy, Vector3 moveVector)
+        public void Update(float dx, float dy, Vector3 position)
         {
             _leftRightRotation -= (dx / 50)  * _rotationSpeed;
             _upDownRotation -= (dy / 50) * _rotationSpeed;
@@ -44,7 +64,7 @@ namespace XnaCraft.Engine
             var rotation = Matrix.CreateRotationX(_upDownRotation) * Matrix.CreateRotationY(_leftRightRotation);
             var direction = Vector3.Transform(Vector3.Forward, rotation);
 
-            _position += Vector3.Transform(moveVector * _moveSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, Matrix.CreateRotationY(_leftRightRotation));
+            _position = position;
 
             View = Matrix.CreateLookAt(_position, _position + direction, Vector3.Transform(Vector3.Up, rotation));
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, _device.Viewport.AspectRatio, 1.0f, 1000);

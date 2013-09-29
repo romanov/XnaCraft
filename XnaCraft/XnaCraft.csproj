@@ -115,6 +115,7 @@
     <Compile Include="Diagnostics\DiagnosticsRenderer.cs" />
     <Compile Include="Engine\Chunk.cs" />
     <Compile Include="Engine\PerlinGenerator.cs" />
+    <Compile Include="Engine\Player.cs" />
     <Compile Include="Engine\Utils.cs" />
     <Compile Include="Engine\World.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -19,11 +19,13 @@ namespace XnaCraft
         private GraphicsDeviceManager _graphics;
 
         private Camera _camera;
-
         private World _world;
+        private Player _player;        
+        
         private WorldGenerator _worldGenerator;
         private WorldRenderer _worldRenderer;
         private DiagnosticsService _diagnosticsService;
+        
 
         private readonly bool _isFullScreen = false;
 
@@ -76,12 +78,16 @@ namespace XnaCraft
             _worldGenerator = new WorldGenerator(_world, GraphicsDevice, Content, _diagnosticsService);
             _worldRenderer = new WorldRenderer(this, GraphicsDevice);
 
+            _player = new Player(_world, new Vector3(0, 20, 0));
+
             GenerateArea(false);
         }
 
         protected override void UnloadContent()
         {
         }
+
+        private KeyboardState _previousKeyboardState = new KeyboardState();
 
         protected override void Update(GameTime gameTime)
         {
@@ -120,10 +126,16 @@ namespace XnaCraft
                     moveVector.Y = -1;
                 }
 
+                var jump = keyboardState.IsKeyDown(Keys.Space);
+
+                _previousKeyboardState = keyboardState;
+
                 var mouseOffsetX = mouseState.X - GraphicsDevice.Viewport.Width / 2;
                 var mouseOffsetY = mouseState.Y - GraphicsDevice.Viewport.Height / 2;
 
-                _camera.Update(gameTime, mouseOffsetX, mouseOffsetY, moveVector);
+                _camera.Update(mouseOffsetX, mouseOffsetY, _player.Position + new Vector3(0, 1.8f, 0));
+
+                _player.Move(gameTime, moveVector * (float)gameTime.ElapsedGameTime.TotalSeconds, _camera.LeftRightRotation, jump);
 
                 Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
