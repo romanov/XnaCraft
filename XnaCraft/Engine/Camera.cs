@@ -14,6 +14,7 @@ namespace XnaCraft.Engine
         private Vector3 _position = new Vector3(0, 12, 0);
         private float _leftRightRotation = MathHelper.ToRadians(-135);
         private float _upDownRotation = MathHelper.ToRadians(-20);
+        private Vector3 _direction; 
 
         private float _moveSpeed = 25.0f;
         private float _rotationSpeed = 0.1f;
@@ -49,6 +50,14 @@ namespace XnaCraft.Engine
             }
         }
 
+        public Vector3 Direction
+        {
+            get
+            {
+                return _direction;
+            }
+        }
+
         public Camera(GraphicsDevice device)
         {
             _device = device;
@@ -62,12 +71,12 @@ namespace XnaCraft.Engine
             _upDownRotation = MathHelper.Clamp(_upDownRotation, -MathHelper.PiOver2, MathHelper.PiOver2);
 
             var rotation = Matrix.CreateRotationX(_upDownRotation) * Matrix.CreateRotationY(_leftRightRotation);
-            var direction = Vector3.Transform(Vector3.Forward, rotation);
+            _direction = Vector3.Transform(Vector3.Forward, rotation);
 
             _position = position;
 
-            View = Matrix.CreateLookAt(_position, _position + direction, Vector3.Transform(Vector3.Up, rotation));
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, _device.Viewport.AspectRatio, 1.0f, 1000);
+            View = Matrix.CreateLookAt(_position, _position + _direction, Vector3.Transform(Vector3.Up, rotation));
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, _device.Viewport.AspectRatio, 0.0001f, 1000);
         }
     }
 }

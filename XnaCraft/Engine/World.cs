@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace XnaCraft.Engine
 {
-    class World
+    public class World
     {
         private readonly Dictionary<Point, Chunk> _chunks = new Dictionary<Point, Chunk>();
 
@@ -70,14 +70,30 @@ namespace XnaCraft.Engine
             var minX = (int)Math.Floor(boundingBox.Min.X); // corners.Select(c => (int)Math.Floor(c.X)).Min();
             var minY = (int)Math.Floor(boundingBox.Min.Y); // corners.Select(c => (int)Math.Floor(c.Y)).Min();
             var minZ = (int)Math.Floor(boundingBox.Min.Z); // corners.Select(c => (int)Math.Floor(c.Z)).Min();
-            var maxX = (int)Math.Floor(boundingBox.Max.X); // corners.Select(c => (int)Math.Floor(c.X)).Max();
-            var maxY = (int)Math.Floor(boundingBox.Max.Y); // corners.Select(c => (int)Math.Floor(c.Y)).Max();
-            var maxZ = (int)Math.Floor(boundingBox.Max.Z); // corners.Select(c => (int)Math.Floor(c.Z)).Max();
+            var maxX = (int)Math.Ceiling(boundingBox.Max.X); // corners.Select(c => (int)Math.Floor(c.X)).Max();
+            var maxY = (int)Math.Ceiling(boundingBox.Max.Y); // corners.Select(c => (int)Math.Floor(c.Y)).Max();
+            var maxZ = (int)Math.Ceiling(boundingBox.Max.Z); // corners.Select(c => (int)Math.Floor(c.Z)).Max();
 
             var blocks = GetBlockRange(minX, minY, minZ, maxX, maxY, maxZ);
 
             return blocks.Any(b => b.BoundingBox.Intersects(boundingBox));
         }
+
+        public Block? RayCast(Ray ray, int centerX, int centerY, int centerZ, int radius)
+        {
+            var blocks = GetBlockRange(centerX - radius, centerY - radius, centerZ - radius, centerX + radius, centerY + radius, centerZ + radius);
+
+            var hitBlock = blocks
+                .Select(b => new { Result = ray.Intersects(b.BoundingBox), Block = b })
+                .Where(r => r.Result.HasValue)
+                .OrderBy(r => r.Result.Value)
+                .Select(r => new Nullable<Block>(r.Block))
+                .FirstOrDefault();
+
+            return hitBlock;
+        }
+
+
 
         private IEnumerable<Block> GetBlockRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
         {
@@ -87,14 +103,14 @@ namespace XnaCraft.Engine
                 {
                     for (var z = minZ; z <= maxZ; z++)
                     {
-                        var cx = (int)Math.Floor(x / (float)WorldGenerator.CHUNK_SIZE);
-                        var cy = (int)Math.Floor(z / (float)WorldGenerator.CHUNK_SIZE);
+                        var cx = (int)Math.Floor(x / (float)WorldGenerator.CHUNK_WIDTH);
+                        var cy = (int)Math.Floor(z / (float)WorldGenerator.CHUNK_WIDTH);
 
-                        var bx = x - cx * WorldGenerator.CHUNK_SIZE;
+                        var bx = x - cx * WorldGenerator.CHUNK_WIDTH;
                         var by = y;
-                        var bz = z - cy * WorldGenerator.CHUNK_SIZE;
+                        var bz = z - cy * WorldGenerator.CHUNK_WIDTH;
 
-                        if (by < WorldGenerator.CHUNK_SIZE)
+                        if (bx >= 0 && bx < WorldGenerator.CHUNK_WIDTH && by >= 0 && by < WorldGenerator.CHUNK_HEIGHT && bz >= 0 && bz < WorldGenerator.CHUNK_WIDTH)
                         {
                             var chunk = GetChunk(cx, cy);
 
@@ -113,7 +129,42 @@ namespace XnaCraft.Engine
             }
         }
 
-        struct Block
+        public IEnumerable<Chunk> GetVisibleChunks(Camera camera)
+        {
+            var viewFrustrum = new BoundingFrustum(camera.View * camera.Projection);
+
+            var ccx = (int)Math.Floor(camera.Position.X / WorldGenerator.CHUNK_WIDTH);
+            var ccy = (int)Math.Floor(camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
+            var radius = 14;
+
+            var chunks = new HashSet<Chunk>();
+            var radiusSquared = radius * radius;
+
+            for (var cx = ccx - radius; cx <= ccx + radius; cx++)
+            {
+                for (var cy = ccy - radius; cy <= ccy + radius; cy++)
+                {
+                    var dx = cx - ccx;
+                    var dy = cy - ccy;
+
+                    if (dx * dx + dy * dy <= radiusSquared)
+                    {
+                        var chunk = GetChunk(cx, cy);
+
+                        if (chunk != null && chunk.IsBuilt && chunk.BoundingBox.Intersects(viewFrustrum))
+                        {
+                            chunks.Add(chunk);
+                        }
+                    }
+                }
+            }
+
+            //_diagnosticsService.SetInfoValue("Chunks", chunks.Count);
+
+            return chunks;
+        }
+
+        public struct Block
         {
             public BlockDescriptor BlockDescriptor;
             public int X;
@@ -124,8 +175,59 @@ namespace XnaCraft.Engine
             {
                 get
                 {
-                    return new BoundingBox(new Vector3(X, Y, Z), new Vector3(X + 1, Y + 1, Z + 1));
+                    return new BoundingBox(new Vector3(X - 0.5f, Y - 0.5f, Z - 0.5f), new Vector3(X + 0.5f, Y + 0.5f, Z + 0.5f));
                 }
+            }
+        }
+
+        public void AddBlock(int x, int y, int z, BlockType blockType)
+        {
+            var cx = (int)Math.Floor(x / (float)WorldGenerator.CHUNK_WIDTH);
+            var cy = (int)Math.Floor(z / (float)WorldGenerator.CHUNK_WIDTH);
+
+            var bx = x - cx * WorldGenerator.CHUNK_WIDTH;
+            var by = y;
+            var bz = z - cy * WorldGenerator.CHUNK_WIDTH;
+
+            var chunk = GetChunk(cx, cy);
+
+            var grassDescriptor = new BlockDescriptor(BlockType.Grass,
+                BlockFaceTexture.GrassTop,
+                BlockFaceTexture.Dirt,
+                BlockFaceTexture.GrassSide);
+
+            chunk.Blocks[bx, by, bz] = grassDescriptor;
+
+            var adjacentChunks = GetAdjacentChunks(chunk);
+
+            chunk.Build(adjacentChunks);
+
+            foreach (var adjacentChunk in adjacentChunks.Values)
+            {
+                adjacentChunk.Build(GetAdjacentChunks(adjacentChunk));
+            }
+        }
+
+        public void RemoveBlock(Block block)
+        {
+            var cx = (int)Math.Floor(block.X / (float)WorldGenerator.CHUNK_WIDTH);
+            var cy = (int)Math.Floor(block.Z / (float)WorldGenerator.CHUNK_WIDTH);
+
+            var bx = block.X - cx * WorldGenerator.CHUNK_WIDTH;
+            var by = block.Y;
+            var bz = block.Z - cy * WorldGenerator.CHUNK_WIDTH;
+
+            var chunk = GetChunk(cx, cy);
+
+            chunk.Blocks[bx, by, bz] = null;
+
+            var adjacentChunks = GetAdjacentChunks(chunk);
+
+            chunk.Build(adjacentChunks);
+
+            foreach (var adjacentChunk in adjacentChunks.Values)
+            {
+                adjacentChunk.Build(GetAdjacentChunks(adjacentChunk));
             }
         }
     }

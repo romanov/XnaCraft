@@ -8,9 +8,9 @@ namespace XnaCraft.Engine
 {
     class Player
     {
-        private float _width = 0.5f;
+        private float _width = 0.8f;
         private float _height = 1.8f;
-        private float _speed = 4f; // 1.38888889f; // 5m/s
+        private float _speed = 4f;
         private float _jumpSpeed = 5f;
 
         private Vector3 _position;
@@ -36,8 +36,8 @@ namespace XnaCraft.Engine
             var halfHeight = _height / 2;
 
             _boundingBox = new BoundingBox(
-                _position + new Vector3(-halfWidth, -halfHeight, 0),
-                _position + new Vector3(halfWidth, halfHeight, 0));
+                _position + new Vector3(-halfWidth, -halfHeight, -halfWidth),
+                _position + new Vector3(halfWidth, halfHeight, halfWidth));
         }
         
         public void Move(GameTime gameTime, Vector3 moveVector, float rotation, bool jump)
@@ -99,7 +99,6 @@ namespace XnaCraft.Engine
             {
                 oldPosition = _position;
             }
-
         }
     }
 }

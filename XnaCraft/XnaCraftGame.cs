@@ -23,9 +23,11 @@ namespace XnaCraft
         private Player _player;        
         
         private WorldGenerator _worldGenerator;
-        private WorldRenderer _worldRenderer;
+        private IWorldRenderer _worldRenderer;
         private DiagnosticsService _diagnosticsService;
-        
+
+        private SpriteBatch _spriteBatch;
+        private Texture2D _crosshairTexture;
 
         private readonly bool _isFullScreen = false;
 
@@ -76,9 +78,27 @@ namespace XnaCraft
 
             _world = new World();
             _worldGenerator = new WorldGenerator(_world, GraphicsDevice, Content, _diagnosticsService);
-            _worldRenderer = new WorldRenderer(this, GraphicsDevice);
+            _worldRenderer = new WorldRenderer(this);
 
-            _player = new Player(_world, new Vector3(0, 20, 0));
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _crosshairTexture = Content.Load<Texture2D>("crosshair");
+
+            var startChunk = _worldGenerator.GenerateChunk(0, 0);
+            var startHeight = WorldGenerator.CHUNK_HEIGHT;
+
+            while (startChunk[WorldGenerator.CHUNK_WIDTH / 2 - 1, startHeight - 1, WorldGenerator.CHUNK_WIDTH / 2 - 1] == null)
+            {
+                startHeight--;
+            }
+
+            var chunk = new Chunk(GraphicsDevice, 0, 0);
+            chunk.SetBlocks(startChunk);
+
+            _world.AddChunk(0, 0, chunk);
+
+            chunk.Build(new Dictionary<Point,Chunk>());
+
+            _player = new Player(_world, new Vector3(WorldGenerator.CHUNK_WIDTH / 2 - 0.5f, startHeight + 1.4f, WorldGenerator.CHUNK_WIDTH / 2 - 0.5f));
 
             GenerateArea(false);
         }
@@ -87,7 +107,15 @@ namespace XnaCraft
         {
         }
 
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            _worldGenerator.StopGeneration();
+
+            base.OnExiting(sender, args);
+        }
+
         private KeyboardState _previousKeyboardState = new KeyboardState();
+        private MouseState _previousMouseState = new MouseState();
 
         protected override void Update(GameTime gameTime)
         {
@@ -128,16 +156,43 @@ namespace XnaCraft
 
                 var jump = keyboardState.IsKeyDown(Keys.Space);
 
-                _previousKeyboardState = keyboardState;
+
+
+
 
                 var mouseOffsetX = mouseState.X - GraphicsDevice.Viewport.Width / 2;
                 var mouseOffsetY = mouseState.Y - GraphicsDevice.Viewport.Height / 2;
 
-                _camera.Update(mouseOffsetX, mouseOffsetY, _player.Position + new Vector3(0, 1.8f, 0));
+                _camera.Update(mouseOffsetX, mouseOffsetY, _player.Position + new Vector3(0, 0.9f, 0));
 
                 _player.Move(gameTime, moveVector * (float)gameTime.ElapsedGameTime.TotalSeconds, _camera.LeftRightRotation, jump);
 
+                _diagnosticsService.SetInfoValue("Pos", String.Format("X = {0}, Y = {1}, Z = {2}", _player.Position.X, _player.Position.Y, _player.Position.Z));
+
                 Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+
+                if (_previousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
+                {
+                    var block = _world.RayCast(new Ray(_camera.Position, _camera.Direction), (int)Math.Floor(_player.Position.X), (int)Math.Floor(_player.Position.Y), (int)Math.Floor(_player.Position.Z), 5);
+
+                    if (block.HasValue)
+                    {
+                        _world.AddBlock(block.Value.X, block.Value.Y + 1, block.Value.Z, BlockType.Grass);
+                    }
+                }
+
+                if (_previousMouseState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
+                {
+                    var block = _world.RayCast(new Ray(_camera.Position, _camera.Direction), (int)Math.Floor(_player.Position.X), (int)Math.Floor(_player.Position.Y), (int)Math.Floor(_player.Position.Z), 5);
+
+                    if (block.HasValue)
+                    {
+                        _world.RemoveBlock(block.Value);
+                    }
+                }
+
+                _previousKeyboardState = keyboardState;
+                _previousMouseState = mouseState;
 
                 GenerateArea(true);
             }
@@ -147,8 +202,8 @@ namespace XnaCraft
 
         private void GenerateArea(bool buildAdjacent)
         {
-            var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_SIZE);
-            var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_SIZE);
+            var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_WIDTH);
+            var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
 
             _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
 
@@ -160,6 +215,11 @@ namespace XnaCraft
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _worldRenderer.Render(_world, _camera);
+
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_crosshairTexture, new Vector2((GraphicsDevice.Viewport.Width - _crosshairTexture.Width) / 2, (GraphicsDevice.Viewport.Height - _crosshairTexture.Height) / 2), Color.White);
+            _spriteBatch.End();
+
 
             base.Draw(gameTime);
         }

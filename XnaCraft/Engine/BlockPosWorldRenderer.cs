@@ -8,7 +8,7 @@ using XnaCraft.Diagnostics;
 
 namespace XnaCraft.Engine
 {
-    class WorldRenderer : IWorldRenderer
+    class BlockPosWorldRenderer : IWorldRenderer
     {
         private readonly GraphicsDevice _graphicsDevice;
         private readonly DiagnosticsService _diagnosticsService;
@@ -16,14 +16,13 @@ namespace XnaCraft.Engine
         private Effect _effect;
         private Texture2D _textureAtlas;
 
-        public WorldRenderer(Game game)
+        public BlockPosWorldRenderer(Game game)
         {
             _graphicsDevice = game.GraphicsDevice;
             _diagnosticsService = game.GetService<DiagnosticsService>();
 
-            _effect = game.Content.Load<Effect>("BlockEffect");
-
-            _textureAtlas = game.Content.Load<Texture2D>("blocks");
+            _effect = game.Content.Load<Effect>("BlockPosEffect");
+            _textureAtlas = game.Content.Load<Texture2D>("block_pos");
         }
 
         public void Render(World world, Camera camera)
@@ -39,12 +38,6 @@ namespace XnaCraft.Engine
             _effect.Parameters["World"].SetValue(Matrix.Identity);
             _effect.Parameters["View"].SetValue(camera.View);
             _effect.Parameters["Projection"].SetValue(camera.Projection);
-            _effect.Parameters["CameraPosition"].SetValue(camera.Position);
-            _effect.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
-            _effect.Parameters["AmbientIntensity"].SetValue(0.8f);
-            _effect.Parameters["FogColor"].SetValue(Color.SkyBlue.ToVector4());
-            _effect.Parameters["FogNear"].SetValue(90);
-            _effect.Parameters["FogFar"].SetValue(140);
             _effect.Parameters["BlockTexture"].SetValue(_textureAtlas);
 
             _effect.CurrentTechnique.Passes[0].Apply();

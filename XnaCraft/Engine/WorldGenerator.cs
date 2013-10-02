@@ -13,7 +13,9 @@ namespace XnaCraft.Engine
 {
     class WorldGenerator
     {
-        public const int CHUNK_SIZE = 16;
+        public const int CHUNK_WIDTH = 16;
+        public const int CHUNK_HEIGHT = 256;
+        public const int GRUNT_LEVEL = 128;
 
         private readonly BlockDescriptor _grassDescriptor;
         private readonly BlockDescriptor _dirtDescriptor;
@@ -28,6 +30,8 @@ namespace XnaCraft.Engine
 
         private readonly BlockingCollection<QueueItem> _chunksToGenerate = new BlockingCollection<QueueItem>();
         private readonly List<Chunk> _chunksToEnqueue = new List<Chunk>();
+
+        private volatile bool _isRunning = true;
 
         public WorldGenerator(World world, GraphicsDevice graphicsDevice, ContentManager contentManager, DiagnosticsService diagnosticsService)
         {
@@ -56,24 +60,14 @@ namespace XnaCraft.Engine
             Task.Factory.StartNew(ProcessGenerationQueue);
         }
 
+        public void StopGeneration()
+        {
+            _isRunning = false;
+        }
+
         public void GenerateArea(Point center, int radius, bool buildAdjacent = true)
         {
             var chunksToGenerate = new List<Chunk>();
-
-            //for (var x = center.X - radius; x <= center.X + radius; x++)
-            //{
-            //    for (var y = center.Y - radius; y <= center.Y + radius; y++)
-            //    {
-            //        if (!_world.HasChunk(x, y))
-            //        {
-            //            var chunk = new Chunk(_graphicsDevice, x, y);
-
-            //            _world.AddChunk(x, y, chunk);
-
-            //            _chunksToGenerate.Add(new QueueItem { Chunk = chunk, BuildAdjacent = buildAdjacent });
-            //        }
-            //    }
-            //}
 
             _chunksToEnqueue.Clear();
 
@@ -83,15 +77,10 @@ namespace XnaCraft.Engine
             {
                 for (var i = r; i > -r; i--)
                 {
-                    var a = new Point(-i, r);
-                    var b = new Point(r, i);
-                    var c = new Point(i, -r);
-                    var d = new Point(-r, -i);
-
-                    TryEnqueueChunk(_chunksToEnqueue, center.X + a.X, center.Y + a.Y);
-                    TryEnqueueChunk(_chunksToEnqueue, center.X + b.X, center.Y + b.Y);
-                    TryEnqueueChunk(_chunksToEnqueue, center.X + c.X, center.Y + c.Y);
-                    TryEnqueueChunk(_chunksToEnqueue, center.X + d.X, center.Y + d.Y);
+                    TryEnqueueChunk(_chunksToEnqueue, center.X - i, center.Y + r);
+                    TryEnqueueChunk(_chunksToEnqueue, center.X + r, center.Y + i);
+                    TryEnqueueChunk(_chunksToEnqueue, center.X + i, center.Y - r);
+                    TryEnqueueChunk(_chunksToEnqueue, center.X - r, center.Y - i);
                 }
             }
 
@@ -115,7 +104,7 @@ namespace XnaCraft.Engine
 
         private void ProcessGenerationQueue()
         {
-            while (true)
+            while (_isRunning)
             {
                 var item = _chunksToGenerate.Take();
 
@@ -154,17 +143,19 @@ namespace XnaCraft.Engine
         {
             var f = 2;
 
-            var chunk = new BlockDescriptor[CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE];
+            var chunk = new BlockDescriptor[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH];
 
-            for (var x = 0; x < CHUNK_SIZE; x++)
+            for (var x = 0; x < CHUNK_WIDTH; x++)
             {
-                for (var z = 0; z < CHUNK_SIZE; z++)
+                for (var z = 0; z < CHUNK_WIDTH; z++)
                 {
-                    var height = (int)(((_perlinGenerator.Noise(
-                        f * (cx * CHUNK_SIZE + x) / (float)CHUNK_SIZE,
-                        f * (cy * CHUNK_SIZE + z) / (float)CHUNK_SIZE, 0) + 1) / 2) * CHUNK_SIZE);
+                    //var height = GRUNT_LEVEL + (int)(((_perlinGenerator.Noise(
+                    //    f * (cx * CHUNK_WIDTH + x) / (float)CHUNK_HEIGHT - GRUNT_LEVEL,
+                    //    f * (cy * CHUNK_WIDTH + z) / (float)CHUNK_HEIGHT - GRUNT_LEVEL, 0) + 1) / 2) * (CHUNK_HEIGHT - GRUNT_LEVEL));\
 
-                    for (var y = 0; y < CHUNK_SIZE; y++)
+                    var height = (x * z % 3) + 3;
+
+                    for (var y = 0; y < CHUNK_HEIGHT; y++)
                     {
                         if (y <= height)
                         {
