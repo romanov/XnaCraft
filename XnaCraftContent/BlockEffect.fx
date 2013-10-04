@@ -28,6 +28,7 @@ struct VertexShaderInput
 {
     float4 Position : POSITION0;	
 	float2 TexCoords : TEXCOORD0;
+	float Occlusion : COLOR0;
 };
 
 struct VertexShaderOutput
@@ -35,6 +36,7 @@ struct VertexShaderOutput
     float4 Position : POSITION0;
     float2 TexCoords : TEXCOORD0;
     float Distance : TEXCOORD3;
+	float Occlusion : COLOR0;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -47,6 +49,10 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
     output.Distance = length(CameraPosition - worldPosition);
     output.TexCoords = input.TexCoords;
+	
+	float4 occlusionColor = { 1, 1, 1, 1 };
+
+	output.Occlusion = occlusionColor * (1 - ((3 - input.Occlusion) * 0.05));
 
     return output;
 }
@@ -57,7 +63,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 	float4 ambient = AmbientIntensity * AmbientColor;	    
     float fog = saturate((input.Distance - FogNear) / (FogNear - FogFar));    
-    float4 color =  texColor * ambient;
+    float4 color =  texColor * input.Occlusion;
     
     return lerp(FogColor, color, fog);
 	return color;

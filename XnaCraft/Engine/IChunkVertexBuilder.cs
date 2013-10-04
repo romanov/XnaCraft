@@ -11,12 +11,12 @@ namespace XnaCraft.Engine
     {
         void BeginBlock(Vector3 position, BlockDescriptor descriptor);
 
-        void AddFrontFace();
-        void AddBackFace();
-        void AddTopFace();
-        void AddBottomFace();
-        void AddLeftFace();
-        void AddRightFace();
+        void AddFrontFace(int[, ,] neighbours);
+        void AddBackFace(int[, ,] neighbours);
+        void AddTopFace(int[, ,] neighbours);
+        void AddBottomFace(int[, ,] neighbours);
+        void AddLeftFace(int[, ,] neighbours);
+        void AddRightFace(int[, ,] neighbours);
 
         VertexBuffer Build(GraphicsDevice device);
     }

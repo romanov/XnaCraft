@@ -44,6 +44,51 @@ namespace XnaCraft.Engine
             _isGenerated = true;
         }
 
+        private int[, ,] GetBlockNeighbours(Point3 blockPosition, Dictionary<Point, Chunk> adjacentChunks)
+        {
+            var neighbours = new int[3, 3, 3];
+
+            var startX = blockPosition.X - 1;
+            var startY = blockPosition.Y - 1;
+            var startZ = blockPosition.Z - 1;
+
+            for (var x = 0; x < 3; x++)
+            {
+                for (var y = 0; y < 3; y++)
+                {
+                    for (var z = 0; z < 3; z++)
+                    {
+                        var wx = startX + x;
+                        var wy = startY + y;
+                        var wz = startZ + z;
+
+                        if (wy < 0 || wy >= WorldGenerator.CHUNK_HEIGHT)
+                        {
+                            continue;
+                        }
+
+                        var cx = (int)Math.Floor(wx / (float)WorldGenerator.CHUNK_WIDTH);
+                        var cy = (int)Math.Floor(wz / (float)WorldGenerator.CHUNK_WIDTH);
+
+                        var bx = wx - WorldGenerator.CHUNK_WIDTH * cx;
+                        var by = wy;
+                        var bz = wz - WorldGenerator.CHUNK_WIDTH * cy;
+
+                        if (cx == X && cy == Y)
+                        {
+                            neighbours[x, y, z] = Blocks[bx, by, bz] != null ? 1 : 0;
+                        }
+                        else if (adjacentChunks.ContainsKey(new Point(cx, cy)))
+                        {
+                            neighbours[x, y, z] = adjacentChunks[new Point(cx, cy)].Blocks[bx, by, bz] != null ? 1 : 0;
+                        }
+                    }
+                }
+            }
+
+            return neighbours;
+        }
+
         // TODO: split into smaller methods
         public void Build(Dictionary<Point, Chunk> adjacentChunks)
         {
@@ -72,11 +117,11 @@ namespace XnaCraft.Engine
 
                             if (top == null)
                             {
-                                builder.AddTopFace();
+                                builder.AddTopFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
                             }
                             if (bottom == null && y != 0)
                             {
-                                builder.AddBottomFace();
+                                builder.AddBottomFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
                             }
                             if (front == null)
                             {
@@ -98,7 +143,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddFrontFace();
+                                    builder.AddFrontFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
                                 }
                             }
                             if (back == null)
@@ -121,7 +166,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddBackFace();
+                                    builder.AddBackFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
                                 }
                             }
                             if (left == null)
@@ -144,7 +189,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddLeftFace();
+                                    builder.AddLeftFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
                                 }
                             }
                             if (right == null)
@@ -167,7 +212,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddRightFace();
+                                    builder.AddRightFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
                                 }
                             }
                         }
