@@ -122,6 +122,7 @@
     <Compile Include="Engine\IWorldRenderer.cs" />
     <Compile Include="Engine\PerlinGenerator.cs" />
     <Compile Include="Engine\Player.cs" />
+    <Compile Include="Engine\Point3.cs" />
     <Compile Include="Engine\Utils.cs" />
     <Compile Include="Engine\UVMapping.cs" />
     <Compile Include="Engine\World.cs" />

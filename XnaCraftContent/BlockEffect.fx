@@ -9,9 +9,9 @@ float AmbientIntensity;
 
 float3 CameraPosition;
 
-float FogNear = 250;
-float FogFar = 300;
-float4 FogColor = {0.5,0.5,0.5,1.0};
+float FogNear = 150;
+float FogFar = 200;
+float4 FogColor = { 0.5, 0.5, 0.5, 1.0 };
 
 Texture BlockTexture;
 sampler BlockTextureSampler = sampler_state
@@ -57,10 +57,10 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 texColor = tex2D(BlockTextureSampler, input.TexCoords);
 
 	float4 ambient = AmbientIntensity * AmbientColor;	    
-    float fog = saturate((input.Distance - FogNear) / (FogNear-FogFar));    
+    float fog = saturate((input.Distance - FogNear) / (FogNear - FogFar));    
     float4 color =  texColor * ambient;
     
-    //return lerp(FogColor, color ,fog);
+    return lerp(FogColor, color, fog);
 	return color;
 }
 

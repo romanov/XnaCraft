@@ -24,6 +24,8 @@ namespace XnaCraft.Engine
 
         public Vector3 Position { get { return _position; } }
 
+        public BoundingBox BoundingBox { get { return _boundingBox; } }
+
         public Player(World world, Vector3 position)
         {
             _world = world;

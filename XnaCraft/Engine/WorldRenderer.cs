@@ -42,9 +42,9 @@ namespace XnaCraft.Engine
             _effect.Parameters["CameraPosition"].SetValue(camera.Position);
             _effect.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
             _effect.Parameters["AmbientIntensity"].SetValue(0.8f);
-            _effect.Parameters["FogColor"].SetValue(Color.SkyBlue.ToVector4());
-            _effect.Parameters["FogNear"].SetValue(90);
-            _effect.Parameters["FogFar"].SetValue(140);
+            _effect.Parameters["FogColor"].SetValue(Color.Gray.ToVector4());
+            _effect.Parameters["FogNear"].SetValue(150);
+            _effect.Parameters["FogFar"].SetValue(200);
             _effect.Parameters["BlockTexture"].SetValue(_textureAtlas);
 
             _effect.CurrentTechnique.Passes[0].Apply();

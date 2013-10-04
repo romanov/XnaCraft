@@ -65,37 +65,32 @@ namespace XnaCraft.Engine
 
         public bool CheckCollision(BoundingBox boundingBox)
         {
-            //var corners = boundingBox.GetCorners();
-
-            var minX = (int)Math.Floor(boundingBox.Min.X); // corners.Select(c => (int)Math.Floor(c.X)).Min();
-            var minY = (int)Math.Floor(boundingBox.Min.Y); // corners.Select(c => (int)Math.Floor(c.Y)).Min();
-            var minZ = (int)Math.Floor(boundingBox.Min.Z); // corners.Select(c => (int)Math.Floor(c.Z)).Min();
-            var maxX = (int)Math.Ceiling(boundingBox.Max.X); // corners.Select(c => (int)Math.Floor(c.X)).Max();
-            var maxY = (int)Math.Ceiling(boundingBox.Max.Y); // corners.Select(c => (int)Math.Floor(c.Y)).Max();
-            var maxZ = (int)Math.Ceiling(boundingBox.Max.Z); // corners.Select(c => (int)Math.Floor(c.Z)).Max();
+            var minX = (int)Math.Floor(boundingBox.Min.X);
+            var minY = (int)Math.Floor(boundingBox.Min.Y);
+            var minZ = (int)Math.Floor(boundingBox.Min.Z);
+            var maxX = (int)Math.Ceiling(boundingBox.Max.X);
+            var maxY = (int)Math.Ceiling(boundingBox.Max.Y);
+            var maxZ = (int)Math.Ceiling(boundingBox.Max.Z);
 
             var blocks = GetBlockRange(minX, minY, minZ, maxX, maxY, maxZ);
 
             return blocks.Any(b => b.BoundingBox.Intersects(boundingBox));
         }
 
-        public Block? RayCast(Ray ray, int centerX, int centerY, int centerZ, int radius)
+        public IEnumerable<Block> RayCast(Ray ray, Point3 center, int radius, bool returnEmptyBlocks = false)
         {
-            var blocks = GetBlockRange(centerX - radius, centerY - radius, centerZ - radius, centerX + radius, centerY + radius, centerZ + radius);
+            var blocks = GetBlockRange(center.X - radius, center.Y - radius, center.Z - radius, center.X + radius, center.Y + radius, center.Z + radius, returnEmptyBlocks);
 
-            var hitBlock = blocks
+            var hitBlocks = blocks
                 .Select(b => new { Result = ray.Intersects(b.BoundingBox), Block = b })
                 .Where(r => r.Result.HasValue)
                 .OrderBy(r => r.Result.Value)
-                .Select(r => new Nullable<Block>(r.Block))
-                .FirstOrDefault();
+                .Select(r => r.Block);
 
-            return hitBlock;
+            return hitBlocks;
         }
 
-
-
-        private IEnumerable<Block> GetBlockRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
+        private IEnumerable<Block> GetBlockRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, bool returnEmptyBlocks = false)
         {
             for (var x = minX; x <= maxX; x++)
             {
@@ -121,6 +116,10 @@ namespace XnaCraft.Engine
                                 if (block != null)
                                 {
                                     yield return new Block { BlockDescriptor = block, X = x, Y = y, Z = z };
+                                }
+                                else if (returnEmptyBlocks)
+                                {
+                                    yield return new Block { X = x, Y = y, Z = z };
                                 }
                             }
                         }
@@ -170,6 +169,14 @@ namespace XnaCraft.Engine
             public int X;
             public int Y;
             public int Z;
+
+            public bool IsEmpty
+            {
+                get
+                {
+                    return BlockDescriptor == null;
+                }
+            }
 
             public BoundingBox BoundingBox
             {

@@ -58,6 +58,14 @@ namespace XnaCraft.Engine
             }
         }
 
+        public Ray Ray
+        {
+            get
+            {
+                return new Ray(_position, _direction);
+            }
+        }
+
         public Camera(GraphicsDevice device)
         {
             _device = device;

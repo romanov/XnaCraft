@@ -149,11 +149,11 @@ namespace XnaCraft.Engine
             {
                 for (var z = 0; z < CHUNK_WIDTH; z++)
                 {
-                    //var height = GRUNT_LEVEL + (int)(((_perlinGenerator.Noise(
-                    //    f * (cx * CHUNK_WIDTH + x) / (float)CHUNK_HEIGHT - GRUNT_LEVEL,
-                    //    f * (cy * CHUNK_WIDTH + z) / (float)CHUNK_HEIGHT - GRUNT_LEVEL, 0) + 1) / 2) * (CHUNK_HEIGHT - GRUNT_LEVEL));\
+                    var height = GRUNT_LEVEL + (int)(((_perlinGenerator.Noise(
+                        f * (cx * CHUNK_WIDTH + x) / (float)64,
+                        f * (cy * CHUNK_WIDTH + z) / (float)64, 0) + 1) / 2) * (64));
 
-                    var height = (x * z % 3) + 3;
+                    //var height = (x * z % 3) + 3;
 
                     for (var y = 0; y < CHUNK_HEIGHT; y++)
                     {

@@ -155,11 +155,6 @@ namespace XnaCraft
                 }
 
                 var jump = keyboardState.IsKeyDown(Keys.Space);
-
-
-
-
-
                 var mouseOffsetX = mouseState.X - GraphicsDevice.Viewport.Width / 2;
                 var mouseOffsetY = mouseState.Y - GraphicsDevice.Viewport.Height / 2;
 
@@ -171,23 +166,29 @@ namespace XnaCraft
 
                 Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
-                if (_previousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
+                if (_previousMouseState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
                 {
-                    var block = _world.RayCast(new Ray(_camera.Position, _camera.Direction), (int)Math.Floor(_player.Position.X), (int)Math.Floor(_player.Position.Y), (int)Math.Floor(_player.Position.Z), 5);
+                    var blocks = _world.RayCast(_camera.Ray, _player.Position.ToPoint3(), 5, true);
+                    var emptyBlocks = blocks.TakeWhile(x => x.IsEmpty);
 
-                    if (block.HasValue)
+                    if (emptyBlocks.Any() && blocks.Count() != emptyBlocks.Count())
                     {
-                        _world.AddBlock(block.Value.X, block.Value.Y + 1, block.Value.Z, BlockType.Grass);
+                        var block = emptyBlocks.Last();
+
+                        if (!_player.BoundingBox.Intersects(block.BoundingBox))
+                        {
+                            _world.AddBlock(block.X, block.Y, block.Z, BlockType.Grass);
+                        }
                     }
                 }
 
-                if (_previousMouseState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
+                if (_previousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
                 {
-                    var block = _world.RayCast(new Ray(_camera.Position, _camera.Direction), (int)Math.Floor(_player.Position.X), (int)Math.Floor(_player.Position.Y), (int)Math.Floor(_player.Position.Z), 5);
+                    var block = _world.RayCast(_camera.Ray, _player.Position.ToPoint3(), 5).FirstOrDefault();
 
-                    if (block.HasValue)
+                    if (!block.IsEmpty)
                     {
-                        _world.RemoveBlock(block.Value);
+                        _world.RemoveBlock(block);
                     }
                 }
 
