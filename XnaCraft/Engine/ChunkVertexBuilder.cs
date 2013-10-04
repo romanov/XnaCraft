@@ -9,24 +9,16 @@ namespace XnaCraft.Engine
 {
     class ChunkVertexBuilder : IChunkVertexBuilder
     {
-        // TODO: code clean-up
-        Vector3 topLeftFront = new Vector3(-0.5f, 0.5f, -0.5f);
-        Vector3 topLeftBack = new Vector3(-0.5f, 0.5f, 0.5f);
-        Vector3 topRightFront = new Vector3(0.5f, 0.5f, -0.5f);
-        Vector3 topRightBack = new Vector3(0.5f, 0.5f, 0.5f);
-        Vector3 bottomLeftFront = new Vector3(-0.5f, -0.5f, -0.5f);
-        Vector3 bottomLeftBack = new Vector3(-0.5f, -0.5f, 0.5f);
-        Vector3 bottomRightFront = new Vector3(0.5f, -0.5f, -0.5f);
-        Vector3 bottomRightBack = new Vector3(0.5f, -0.5f, 0.5f);
+        private readonly Vector3 _topLeftFront = new Vector3(-0.5f, 0.5f, -0.5f);
+        private readonly Vector3 _topLeftBack = new Vector3(-0.5f, 0.5f, 0.5f);
+        private readonly Vector3 _topRightFront = new Vector3(0.5f, 0.5f, -0.5f);
+        private readonly Vector3 _topRightBack = new Vector3(0.5f, 0.5f, 0.5f);
+        private readonly Vector3 _bottomLeftFront = new Vector3(-0.5f, -0.5f, -0.5f);
+        private readonly Vector3 _bottomLeftBack = new Vector3(-0.5f, -0.5f, 0.5f);
+        private readonly Vector3 _bottomRightFront = new Vector3(0.5f, -0.5f, -0.5f);
+        private readonly Vector3 _bottomRightBack = new Vector3(0.5f, -0.5f, 0.5f);
 
-        Vector3 normalFront = new Vector3(0.0f, 0.0f, 1.0f);
-        Vector3 normalBack = new Vector3(0.0f, 0.0f, -1.0f);
-        Vector3 normalTop = new Vector3(0.0f, 1.0f, 0.0f);
-        Vector3 normalBottom = new Vector3(0.0f, -1.0f, 0.0f);
-        Vector3 normalLeft = new Vector3(-1.0f, 0.0f, 0.0f);
-        Vector3 normalRight = new Vector3(1.0f, 0.0f, 0.0f);
-
-        private readonly List<VertexPositionNormalTexture> _faces = new List<VertexPositionNormalTexture>();
+        private readonly List<VertexPositionTexture> _faces = new List<VertexPositionTexture>();
 
         private Vector3 _position;
         private BlockDescriptor _descriptor;
@@ -43,12 +35,12 @@ namespace XnaCraft.Engine
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionNormalTexture(topLeftFront + _position, normalFront, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomLeftFront + _position, normalFront, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(topRightFront + _position, normalFront, uvMapping.TopRight),
-                new VertexPositionNormalTexture(bottomLeftFront + _position, normalFront, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(bottomRightFront + _position, normalFront, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(topRightFront + _position, normalFront, uvMapping.TopRight),
+                new VertexPositionTexture(_topLeftFront + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomLeftFront + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_topRightFront + _position, uvMapping.TopRight),
+                new VertexPositionTexture(_bottomLeftFront + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_bottomRightFront + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_topRightFront + _position, uvMapping.TopRight),
             });
         }
 
@@ -58,12 +50,12 @@ namespace XnaCraft.Engine
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionNormalTexture(topLeftBack + _position, normalBack, uvMapping.TopRight),
-                new VertexPositionNormalTexture(topRightBack + _position, normalBack, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomLeftBack + _position, normalBack, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(bottomLeftBack + _position, normalBack, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(topRightBack + _position, normalBack, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomRightBack + _position, normalBack, uvMapping.BottomLeft),
+                new VertexPositionTexture(_topLeftBack + _position, uvMapping.TopRight),
+                new VertexPositionTexture(_topRightBack + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomLeftBack + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_bottomLeftBack + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_topRightBack + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomRightBack + _position, uvMapping.BottomLeft),
             });
         }
 
@@ -73,12 +65,12 @@ namespace XnaCraft.Engine
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionNormalTexture(topLeftFront + _position, normalTop, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(topRightBack + _position, normalTop, uvMapping.TopRight),
-                new VertexPositionNormalTexture(topLeftBack + _position, normalTop, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(topLeftFront + _position, normalTop, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(topRightFront + _position, normalTop, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(topRightBack + _position, normalTop, uvMapping.TopRight),
+                new VertexPositionTexture(_topLeftFront + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_topRightBack + _position, uvMapping.TopRight),
+                new VertexPositionTexture(_topLeftBack + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_topLeftFront + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_topRightFront + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_topRightBack + _position, uvMapping.TopRight),
             });
         }
 
@@ -88,12 +80,12 @@ namespace XnaCraft.Engine
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionNormalTexture(bottomLeftFront + _position, normalBottom, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomLeftBack + _position, normalBottom, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(bottomRightBack + _position, normalBottom, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(bottomLeftFront + _position, normalBottom, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomRightBack + _position, normalBottom, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(bottomRightFront + _position, normalBottom, uvMapping.TopRight),
+                new VertexPositionTexture(_bottomLeftFront + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomLeftBack + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_bottomRightBack + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_bottomLeftFront + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomRightBack + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_bottomRightFront + _position, uvMapping.TopRight),
             });
         }
 
@@ -103,12 +95,12 @@ namespace XnaCraft.Engine
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionNormalTexture(topLeftFront + _position, normalLeft, uvMapping.TopRight),
-                new VertexPositionNormalTexture(bottomLeftBack + _position, normalLeft, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(bottomLeftFront + _position, normalLeft, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(topLeftBack + _position, normalLeft, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomLeftBack + _position, normalLeft, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(topLeftFront + _position, normalLeft, uvMapping.TopRight),
+                new VertexPositionTexture(_topLeftFront + _position, uvMapping.TopRight),
+                new VertexPositionTexture(_bottomLeftBack + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_bottomLeftFront + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_topLeftBack + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomLeftBack + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_topLeftFront + _position, uvMapping.TopRight),
             });
         }
 
@@ -118,12 +110,12 @@ namespace XnaCraft.Engine
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionNormalTexture(topRightFront + _position, normalRight, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomRightFront + _position, normalRight, uvMapping.BottomLeft),
-                new VertexPositionNormalTexture(bottomRightBack + _position, normalRight, uvMapping.BottomRight),
-                new VertexPositionNormalTexture(topRightBack + _position, normalRight, uvMapping.TopRight),
-                new VertexPositionNormalTexture(topRightFront + _position, normalRight, uvMapping.TopLeft),
-                new VertexPositionNormalTexture(bottomRightBack + _position, normalRight, uvMapping.BottomRight),
+                new VertexPositionTexture(_topRightFront + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomRightFront + _position, uvMapping.BottomLeft),
+                new VertexPositionTexture(_bottomRightBack + _position, uvMapping.BottomRight),
+                new VertexPositionTexture(_topRightBack + _position, uvMapping.TopRight),
+                new VertexPositionTexture(_topRightFront + _position, uvMapping.TopLeft),
+                new VertexPositionTexture(_bottomRightBack + _position, uvMapping.BottomRight),
             });
         }
 
@@ -146,11 +138,37 @@ namespace XnaCraft.Engine
         public VertexBuffer Build(GraphicsDevice device)
         {
             var vertices = _faces.ToArray();
-            var buffer = new VertexBuffer(device, VertexPositionNormalTexture.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
+            var buffer = new VertexBuffer(device, VertexPositionTexture.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
 
             buffer.SetData(vertices);
 
             return buffer;
+        }
+
+        [Serializable]
+        struct VertexPositionTexture : IVertexType
+        {
+            private Vector3 _position;
+            private Vector2 _textureCoordinate;
+
+            public static readonly VertexElement[] VertexElements = new []
+            { 
+                new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+                new VertexElement(sizeof(float) * 3, VertexElementFormat.Vector2,  VertexElementUsage.TextureCoordinate, 0),
+            };
+
+            public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(VertexElements);
+
+            VertexDeclaration IVertexType.VertexDeclaration { get { return VertexDeclaration; } }
+
+            public VertexPositionTexture(Vector3 position, Vector2 textureCoordinate)
+            {
+                _position = position;
+                _textureCoordinate = textureCoordinate;
+            }
+
+            public Vector3 Position { get { return _position; } set { _position = value; } }
+            public Vector2 TextureCoordinate { get { return _textureCoordinate; } set { _textureCoordinate = value; } }
         }
     }
 }

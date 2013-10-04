@@ -27,7 +27,6 @@ sampler BlockTextureSampler = sampler_state
 struct VertexShaderInput
 {
     float4 Position : POSITION0;	
-	float4 Normal : POSITION1;
 	float2 TexCoords : TEXCOORD0;
 };
 
