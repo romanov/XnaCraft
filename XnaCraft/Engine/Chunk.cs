@@ -17,6 +17,7 @@ namespace XnaCraft.Engine
         public BoundingBox BoundingBox { get; private set; }
 
         private readonly GraphicsDevice _device;
+        private readonly World _world;
 
         private volatile VertexBuffer _buffer;
         private volatile bool _isGenerated = false;
@@ -25,7 +26,7 @@ namespace XnaCraft.Engine
         public bool IsGenerated { get { return _isGenerated; } }
         public bool IsBuilt { get { return _isBuilt; } }
 
-        public Chunk(GraphicsDevice device, int x, int y)
+        public Chunk(GraphicsDevice device, World world, int x, int y)
         {
             X = x;
             Y = y;
@@ -33,9 +34,10 @@ namespace XnaCraft.Engine
             var bbMin = new Vector3(x * WorldGenerator.CHUNK_WIDTH, 0, y * WorldGenerator.CHUNK_WIDTH);
             var bbMax = bbMin + new Vector3(WorldGenerator.CHUNK_WIDTH, WorldGenerator.CHUNK_HEIGHT, WorldGenerator.CHUNK_WIDTH);
 
-            BoundingBox = new Microsoft.Xna.Framework.BoundingBox(bbMin, bbMax);
+            BoundingBox = new BoundingBox(bbMin, bbMax);
 
             _device = device;
+            _world = world;
         }
 
         public void SetBlocks(BlockDescriptor[, ,] blocks)
@@ -44,13 +46,11 @@ namespace XnaCraft.Engine
             _isGenerated = true;
         }
 
-        private int[, ,] GetBlockNeighbours(Point3 blockPosition, Dictionary<Point, Chunk> adjacentChunks)
+        private int[, ,] GetBlockNeighbours(Point3 blockPosition)
         {
             var neighbours = new int[3, 3, 3];
 
-            var startX = blockPosition.X - 1;
-            var startY = blockPosition.Y - 1;
-            var startZ = blockPosition.Z - 1;
+            var start = blockPosition - 1;
 
             for (var x = 0; x < 3; x++)
             {
@@ -58,30 +58,7 @@ namespace XnaCraft.Engine
                 {
                     for (var z = 0; z < 3; z++)
                     {
-                        var wx = startX + x;
-                        var wy = startY + y;
-                        var wz = startZ + z;
-
-                        if (wy < 0 || wy >= WorldGenerator.CHUNK_HEIGHT)
-                        {
-                            continue;
-                        }
-
-                        var cx = (int)Math.Floor(wx / (float)WorldGenerator.CHUNK_WIDTH);
-                        var cy = (int)Math.Floor(wz / (float)WorldGenerator.CHUNK_WIDTH);
-
-                        var bx = wx - WorldGenerator.CHUNK_WIDTH * cx;
-                        var by = wy;
-                        var bz = wz - WorldGenerator.CHUNK_WIDTH * cy;
-
-                        if (cx == X && cy == Y)
-                        {
-                            neighbours[x, y, z] = Blocks[bx, by, bz] != null ? 1 : 0;
-                        }
-                        else if (adjacentChunks.ContainsKey(new Point(cx, cy)))
-                        {
-                            neighbours[x, y, z] = adjacentChunks[new Point(cx, cy)].Blocks[bx, by, bz] != null ? 1 : 0;
-                        }
+                        neighbours[x, y, z] = _world.GetBlock(start + new Point3(x, y, z)).IsEmpty ? 0 : 1;
                     }
                 }
             }
@@ -90,7 +67,7 @@ namespace XnaCraft.Engine
         }
 
         // TODO: split into smaller methods
-        public void Build(Dictionary<Point, Chunk> adjacentChunks)
+        public void Build()
         {
             var builder = new ChunkVertexBuilder();
 
@@ -117,11 +94,11 @@ namespace XnaCraft.Engine
 
                             if (top == null)
                             {
-                                builder.AddTopFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
+                                builder.AddTopFace(GetBlockNeighbours(position.ToPoint3()));
                             }
                             if (bottom == null && y != 0)
                             {
-                                builder.AddBottomFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
+                                builder.AddBottomFace(GetBlockNeighbours(position.ToPoint3()));
                             }
                             if (front == null)
                             {
@@ -129,9 +106,9 @@ namespace XnaCraft.Engine
 
                                 if (z == 0)
                                 {
-                                    var adjacentChunk = default(Chunk);
+                                    var adjacentChunk = _world.GetChunk(X, Y - 1);
 
-                                    if (adjacentChunks.TryGetValue(new Point(X, Y - 1), out adjacentChunk))
+                                    if (adjacentChunk != null)
                                     {
                                         draw = adjacentChunk.Blocks[x, y, WorldGenerator.CHUNK_WIDTH - 1] == null;
                                     }
@@ -143,7 +120,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddFrontFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
+                                    builder.AddFrontFace(GetBlockNeighbours(position.ToPoint3()));
                                 }
                             }
                             if (back == null)
@@ -152,9 +129,9 @@ namespace XnaCraft.Engine
 
                                 if (z == WorldGenerator.CHUNK_WIDTH - 1)
                                 {
-                                    var adjacentChunk = default(Chunk);
+                                    var adjacentChunk = _world.GetChunk(X, Y + 1);
 
-                                    if (adjacentChunks.TryGetValue(new Point(X, Y + 1), out adjacentChunk))
+                                    if (adjacentChunk != null)
                                     {
                                         draw = adjacentChunk.Blocks[x, y, 0] == null;
                                     }
@@ -166,7 +143,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddBackFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
+                                    builder.AddBackFace(GetBlockNeighbours(position.ToPoint3()));
                                 }
                             }
                             if (left == null)
@@ -175,9 +152,9 @@ namespace XnaCraft.Engine
 
                                 if (x == 0)
                                 {
-                                    var adjacentChunk = default(Chunk);
+                                    var adjacentChunk = _world.GetChunk(X - 1, Y);
 
-                                    if (adjacentChunks.TryGetValue(new Point(X - 1, Y), out adjacentChunk))
+                                    if (adjacentChunk != null)
                                     {
                                         draw = adjacentChunk.Blocks[WorldGenerator.CHUNK_WIDTH - 1, y, z] == null;
                                     }
@@ -189,7 +166,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddLeftFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
+                                    builder.AddLeftFace(GetBlockNeighbours(position.ToPoint3()));
                                 }
                             }
                             if (right == null)
@@ -198,9 +175,9 @@ namespace XnaCraft.Engine
 
                                 if (x == WorldGenerator.CHUNK_WIDTH - 1)
                                 {
-                                    var adjacentChunk = default(Chunk);
+                                    var adjacentChunk = _world.GetChunk(X + 1, Y);
 
-                                    if (adjacentChunks.TryGetValue(new Point(X + 1, Y), out adjacentChunk))
+                                    if (adjacentChunk != null)
                                     {
                                         draw = adjacentChunk.Blocks[0, y, z] == null;
                                     }
@@ -212,7 +189,7 @@ namespace XnaCraft.Engine
 
                                 if (draw)
                                 {
-                                    builder.AddRightFace(GetBlockNeighbours(position.ToPoint3(), adjacentChunks));
+                                    builder.AddRightFace(GetBlockNeighbours(position.ToPoint3()));
                                 }
                             }
                         }

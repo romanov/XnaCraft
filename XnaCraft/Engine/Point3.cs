@@ -46,6 +46,16 @@ namespace XnaCraft.Engine
             return a.Equals(b);
         }
 
+        public static Point3 operator +(Point3 a, Point3 b)
+        {
+            return new Point3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+
+        public static Point3 operator -(Point3 a, Point3 b)
+        {
+            return new Point3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
         public static Point3 operator +(Point3 a, int value)
         {
             return new Point3(a.X + value, a.Y + value, a.Z + value);

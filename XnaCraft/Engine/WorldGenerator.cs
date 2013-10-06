@@ -94,7 +94,7 @@ namespace XnaCraft.Engine
             {
                 if (!_world.HasChunk(chunkPosition.X, chunkPosition.Y))
                 {
-                    var chunk = new Chunk(_graphicsDevice, chunkPosition.X, chunkPosition.Y);
+                    var chunk = new Chunk(_graphicsDevice, _world, chunkPosition.X, chunkPosition.Y);
 
                     _world.AddChunk(chunk.X, chunk.Y, chunk);
 
@@ -126,7 +126,7 @@ namespace XnaCraft.Engine
                 {
                     var adjacentChunks = _world.GetAdjacentChunks(chunk);
 
-                    chunk.Build(adjacentChunks);
+                    chunk.Build();
 
                     if (batch.BuildAdjacent)
                     {
@@ -134,7 +134,7 @@ namespace XnaCraft.Engine
                         {
                             if (!batch.Chunks.Contains(adjacentChunk))
                             {
-                                adjacentChunk.Build(_world.GetAdjacentChunks(adjacentChunk));
+                                adjacentChunk.Build();
                             }
                         }
                     }

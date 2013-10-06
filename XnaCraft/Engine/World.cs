@@ -74,6 +74,33 @@ namespace XnaCraft.Engine
             return hitBlocks;
         }
 
+        public Block GetBlock(Point3 position)
+        {
+            var cx = (int)Math.Floor(position.X / (float)WorldGenerator.CHUNK_WIDTH);
+            var cy = (int)Math.Floor(position.Z / (float)WorldGenerator.CHUNK_WIDTH);
+
+            var bx = position.X - cx * WorldGenerator.CHUNK_WIDTH;
+            var by = position.Y;
+            var bz = position.Z - cy * WorldGenerator.CHUNK_WIDTH;
+
+            if (by >= 0 && by < WorldGenerator.CHUNK_HEIGHT)
+            {
+                var chunk = GetChunk(cx, cy);
+
+                if (chunk != null && chunk.IsGenerated)
+                {
+                    var block = chunk.Blocks[bx, by, bz];
+
+                    if (block != null)
+                    {
+                        return new Block { BlockDescriptor = block, X = position.X, Y = position.Y, Z = position.Z };
+                    }
+                }
+            }
+
+            return new Block { X = position.X, Y = position.Y, Z = position.Z };
+        }
+
         private IEnumerable<Block> GetBlockRange(Point3 min, Point3 max, bool returnEmptyBlocks = false)
         {
             for (var x = min.X; x <= max.X; x++)
@@ -189,11 +216,11 @@ namespace XnaCraft.Engine
 
             var adjacentChunks = GetAdjacentChunks(chunk);
 
-            chunk.Build(adjacentChunks);
+            chunk.Build();
 
             foreach (var adjacentChunk in adjacentChunks.Values)
             {
-                adjacentChunk.Build(GetAdjacentChunks(adjacentChunk));
+                adjacentChunk.Build();
             }
         }
 
@@ -212,11 +239,11 @@ namespace XnaCraft.Engine
 
             var adjacentChunks = GetAdjacentChunks(chunk);
 
-            chunk.Build(adjacentChunks);
+            chunk.Build();
 
             foreach (var adjacentChunk in adjacentChunks.Values)
             {
-                adjacentChunk.Build(GetAdjacentChunks(adjacentChunk));
+                adjacentChunk.Build();
             }
         }
     }

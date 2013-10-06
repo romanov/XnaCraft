@@ -91,12 +91,12 @@ namespace XnaCraft
                 startHeight--;
             }
 
-            var chunk = new Chunk(GraphicsDevice, 0, 0);
+            var chunk = new Chunk(GraphicsDevice, _world, 0, 0);
             chunk.SetBlocks(startChunk);
 
             _world.AddChunk(0, 0, chunk);
 
-            chunk.Build(new Dictionary<Point,Chunk>());
+            chunk.Build();
 
             _player = new Player(_world, new Vector3(WorldGenerator.CHUNK_WIDTH / 2 - 0.5f, startHeight + 1.41f, WorldGenerator.CHUNK_WIDTH / 2 - 0.5f));
 
