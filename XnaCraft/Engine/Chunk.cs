@@ -58,7 +58,7 @@ namespace XnaCraft.Engine
                 {
                     for (var z = 0; z < 3; z++)
                     {
-                        neighbours[x, y, z] = _world.GetBlock(start + new Point3(x, y, z)).IsEmpty ? 0 : 1;
+                        neighbours[x, y, z] = _world.GetBlock(start + new Point3(x, y, z)) == null ? 0 : 1;
                     }
                 }
             }
@@ -66,7 +66,6 @@ namespace XnaCraft.Engine
             return neighbours;
         }
 
-        // TODO: split into smaller methods
         public void Build()
         {
             var builder = new ChunkVertexBuilder();
@@ -81,116 +80,40 @@ namespace XnaCraft.Engine
 
                         if (descriptor != null)
                         {
-                            var position = new Vector3(X * WorldGenerator.CHUNK_WIDTH + x, y, Y * WorldGenerator.CHUNK_WIDTH + z);
-
-                            builder.BeginBlock(position, descriptor);
+                            var position = new Point3(X * WorldGenerator.CHUNK_WIDTH + x, y, Y * WorldGenerator.CHUNK_WIDTH + z);
 
                             var top = y < WorldGenerator.CHUNK_HEIGHT - 1 ? Blocks[x, y + 1, z] : null;
                             var bottom = y > 0 ? Blocks[x, y - 1, z] : null;
-                            var front = z > 0 ? Blocks[x, y, z - 1] : null;
-                            var back = z < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x, y, z + 1] : null;
-                            var left = x > 0 ? Blocks[x - 1, y, z] : null;
-                            var right = x < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x + 1, y, z] : null;
+                            var front = z > 0 ? Blocks[x, y, z - 1] : _world.GetBlock(position + new Point3(0, 0, -1));
+                            var back = z < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x, y, z + 1] : _world.GetBlock(position + new Point3(0, 0, 1));
+                            var left = x > 0 ? Blocks[x - 1, y, z] : _world.GetBlock(position + new Point3(-1, 0, 0));
+                            var right = x < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x + 1, y, z] : _world.GetBlock(position + new Point3(1, 0, 0));
+
+                            builder.BeginBlock(position.ToVector3(), descriptor);
 
                             if (top == null)
                             {
-                                builder.AddTopFace(GetBlockNeighbours(position.ToPoint3()));
+                                builder.AddTopFace(GetBlockNeighbours(position));
                             }
                             if (bottom == null && y != 0)
                             {
-                                builder.AddBottomFace(GetBlockNeighbours(position.ToPoint3()));
+                                builder.AddBottomFace(GetBlockNeighbours(position));
                             }
                             if (front == null)
                             {
-                                var draw = false;
-
-                                if (z == 0)
-                                {
-                                    var adjacentChunk = _world.GetChunk(X, Y - 1);
-
-                                    if (adjacentChunk != null)
-                                    {
-                                        draw = adjacentChunk.Blocks[x, y, WorldGenerator.CHUNK_WIDTH - 1] == null;
-                                    }
-                                }
-                                else
-                                {
-                                    draw = true;
-                                }
-
-                                if (draw)
-                                {
-                                    builder.AddFrontFace(GetBlockNeighbours(position.ToPoint3()));
-                                }
+                                builder.AddFrontFace(GetBlockNeighbours(position));
                             }
                             if (back == null)
                             {
-                                var draw = false;
-
-                                if (z == WorldGenerator.CHUNK_WIDTH - 1)
-                                {
-                                    var adjacentChunk = _world.GetChunk(X, Y + 1);
-
-                                    if (adjacentChunk != null)
-                                    {
-                                        draw = adjacentChunk.Blocks[x, y, 0] == null;
-                                    }
-                                }
-                                else
-                                {
-                                    draw = true;
-                                }
-
-                                if (draw)
-                                {
-                                    builder.AddBackFace(GetBlockNeighbours(position.ToPoint3()));
-                                }
+                                builder.AddBackFace(GetBlockNeighbours(position));
                             }
                             if (left == null)
                             {
-                                var draw = false;
-
-                                if (x == 0)
-                                {
-                                    var adjacentChunk = _world.GetChunk(X - 1, Y);
-
-                                    if (adjacentChunk != null)
-                                    {
-                                        draw = adjacentChunk.Blocks[WorldGenerator.CHUNK_WIDTH - 1, y, z] == null;
-                                    }
-                                }
-                                else
-                                {
-                                    draw = true;
-                                }
-
-                                if (draw)
-                                {
-                                    builder.AddLeftFace(GetBlockNeighbours(position.ToPoint3()));
-                                }
+                                builder.AddLeftFace(GetBlockNeighbours(position));
                             }
                             if (right == null)
                             {
-                                var draw = false;
-
-                                if (x == WorldGenerator.CHUNK_WIDTH - 1)
-                                {
-                                    var adjacentChunk = _world.GetChunk(X + 1, Y);
-
-                                    if (adjacentChunk != null)
-                                    {
-                                        draw = adjacentChunk.Blocks[0, y, z] == null;
-                                    }
-                                }
-                                else
-                                {
-                                    draw = true;
-                                }
-
-                                if (draw)
-                                {
-                                    builder.AddRightFace(GetBlockNeighbours(position.ToPoint3()));
-                                }
+                                builder.AddRightFace(GetBlockNeighbours(position));
                             }
                         }
                     }

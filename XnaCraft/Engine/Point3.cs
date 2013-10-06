@@ -12,6 +12,11 @@ namespace XnaCraft.Engine
         {
             return new Point3((int)Math.Round(vector.X), (int)Math.Round(vector.Y), (int)Math.Round(vector.Z));
         }
+
+        public static Vector3 ToVector3(this Point3 point)
+        {
+            return new Vector3(point.X, point.Y, point.Z);
+        }
     }
 
     public struct Point3

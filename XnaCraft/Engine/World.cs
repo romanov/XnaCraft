@@ -74,7 +74,7 @@ namespace XnaCraft.Engine
             return hitBlocks;
         }
 
-        public Block GetBlock(Point3 position)
+        public BlockDescriptor GetBlock(Point3 position)
         {
             var cx = (int)Math.Floor(position.X / (float)WorldGenerator.CHUNK_WIDTH);
             var cy = (int)Math.Floor(position.Z / (float)WorldGenerator.CHUNK_WIDTH);
@@ -87,18 +87,18 @@ namespace XnaCraft.Engine
             {
                 var chunk = GetChunk(cx, cy);
 
-                if (chunk != null && chunk.IsGenerated)
+                if (chunk != null)
                 {
                     var block = chunk.Blocks[bx, by, bz];
 
                     if (block != null)
                     {
-                        return new Block { BlockDescriptor = block, X = position.X, Y = position.Y, Z = position.Z };
+                        return block;
                     }
                 }
             }
 
-            return new Block { X = position.X, Y = position.Y, Z = position.Z };
+            return null;
         }
 
         private IEnumerable<Block> GetBlockRange(Point3 min, Point3 max, bool returnEmptyBlocks = false)
@@ -116,11 +116,11 @@ namespace XnaCraft.Engine
                         var by = y;
                         var bz = z - cy * WorldGenerator.CHUNK_WIDTH;
 
-                        if (bx >= 0 && bx < WorldGenerator.CHUNK_WIDTH && by >= 0 && by < WorldGenerator.CHUNK_HEIGHT && bz >= 0 && bz < WorldGenerator.CHUNK_WIDTH)
+                        if (by >= 0 && by < WorldGenerator.CHUNK_HEIGHT)
                         {
                             var chunk = GetChunk(cx, cy);
 
-                            if (chunk != null && chunk.IsGenerated)
+                            if (chunk != null)
                             {
                                 var block = chunk.Blocks[bx, by, bz];
 
