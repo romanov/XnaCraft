@@ -11,10 +11,11 @@ using Microsoft.Xna.Framework.Media;
 using XnaCraft.Diagnostics;
 using XnaCraft.Engine;
 using System.Threading.Tasks;
+using XnaCraft.Engine.Input;
 
 namespace XnaCraft
 {
-    public class XnaCraftGame : Microsoft.Xna.Framework.Game
+    public class XnaCraftGame : Game
     {
         private GraphicsDeviceManager _graphics;
 
@@ -24,13 +25,11 @@ namespace XnaCraft
         
         private WorldGenerator _worldGenerator;
         private IWorldRenderer _worldRenderer;
+        private InputController _inputController;
         private DiagnosticsService _diagnosticsService;
 
         private SpriteBatch _spriteBatch;
         private Texture2D _crosshairTexture;
-
-        private KeyboardState _previousKeyboardState = new KeyboardState();
-        private MouseState _previousMouseState = new MouseState();
 
         private readonly bool _isFullScreen = false;
 
@@ -103,6 +102,8 @@ namespace XnaCraft
 
             _player = new Player(_world, new Vector3(WorldGenerator.CHUNK_WIDTH / 2 - 0.5f, startHeight + 1.41f, WorldGenerator.CHUNK_WIDTH / 2 - 0.5f));
 
+            _inputController = new InputController(this, _world, _camera, _player);
+
             GenerateArea(false);
         }
 
@@ -124,76 +125,7 @@ namespace XnaCraft
 
             if (IsActive)
             {
-                var keyboardState = Keyboard.GetState();
-                var mouseState = Mouse.GetState();
-
-                var moveVector = Vector3.Zero;
-
-                if (keyboardState.IsKeyDown(Keys.W))
-                {
-                    moveVector.Z = -1;
-                }
-                if (keyboardState.IsKeyDown(Keys.S))
-                {
-                    moveVector.Z = 1;
-                }
-                if (keyboardState.IsKeyDown(Keys.A))
-                {
-                    moveVector.X = -1;
-                }
-                if (keyboardState.IsKeyDown(Keys.D))
-                {
-                    moveVector.X = 1;
-                }
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    moveVector.Y = 1;
-                }
-                if (keyboardState.IsKeyDown(Keys.LeftControl))
-                {
-                    moveVector.Y = -1;
-                }
-
-                var jump = keyboardState.IsKeyDown(Keys.Space);
-                var mouseOffsetX = mouseState.X - GraphicsDevice.Viewport.Width / 2;
-                var mouseOffsetY = mouseState.Y - GraphicsDevice.Viewport.Height / 2;
-
-                _camera.Update(mouseOffsetX, mouseOffsetY, _player.Position + new Vector3(0, 0.9f, 0));
-
-                _player.Move(gameTime, moveVector * (float)gameTime.ElapsedGameTime.TotalSeconds, _camera.LeftRightRotation, jump);
-
-                _diagnosticsService.SetInfoValue("Pos", String.Format("X = {0}, Y = {1}, Z = {2}", _player.Position.X, _player.Position.Y, _player.Position.Z));
-
-                Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
-
-                if (_previousMouseState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
-                {
-                    var blocks = _world.RayCast(_camera.Ray, _player.Position.ToPoint3(), 5, true);
-                    var emptyBlocks = blocks.TakeWhile(x => x.IsEmpty);
-
-                    if (emptyBlocks.Any() && blocks.Count() != emptyBlocks.Count())
-                    {
-                        var block = emptyBlocks.Last();
-
-                        if (!_player.BoundingBox.Intersects(block.BoundingBox))
-                        {
-                            _world.AddBlock(block.X, block.Y, block.Z, BlockType.Grass);
-                        }
-                    }
-                }
-
-                if (_previousMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
-                {
-                    var block = _world.RayCast(_camera.Ray, _player.Position.ToPoint3(), 5).FirstOrDefault();
-
-                    if (!block.IsEmpty)
-                    {
-                        _world.RemoveBlock(block);
-                    }
-                }
-
-                _previousKeyboardState = keyboardState;
-                _previousMouseState = mouseState;
+                _inputController.Update(gameTime);
 
                 GenerateArea(true);
             }
@@ -220,7 +152,6 @@ namespace XnaCraft
             _spriteBatch.Begin();
             _spriteBatch.Draw(_crosshairTexture, new Vector2((GraphicsDevice.Viewport.Width - _crosshairTexture.Width) / 2, (GraphicsDevice.Viewport.Height - _crosshairTexture.Height) / 2), Color.White);
             _spriteBatch.End();
-
 
             base.Draw(gameTime);
         }

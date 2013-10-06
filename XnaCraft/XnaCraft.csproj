@@ -119,6 +119,12 @@
     <Compile Include="Engine\ChunkVertexBuilder.cs" />
     <Compile Include="Engine\GameExtensions.cs" />
     <Compile Include="Engine\IChunkVertexBuilder.cs" />
+    <Compile Include="Engine\Input\Commands\AddBlockCommand.cs" />
+    <Compile Include="Engine\Input\InputState.cs" />
+    <Compile Include="Engine\Input\Commands\JumpCommand.cs" />
+    <Compile Include="Engine\Input\Commands\RemoveBlockCommand.cs" />
+    <Compile Include="Engine\Input\ICommand.cs" />
+    <Compile Include="Engine\Input\InputController.cs" />
     <Compile Include="Engine\IWorldRenderer.cs" />
     <Compile Include="Engine\PerlinGenerator.cs" />
     <Compile Include="Engine\Player.cs" />

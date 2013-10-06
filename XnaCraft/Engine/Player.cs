@@ -19,6 +19,7 @@ namespace XnaCraft.Engine
 
         private readonly World _world;
 
+        private bool _jump = false;
         private const float G = 10;
         private float _downfallSpeed = 0;
 
@@ -41,15 +42,21 @@ namespace XnaCraft.Engine
                 _position + new Vector3(-halfWidth, -halfHeight, -halfWidth),
                 _position + new Vector3(halfWidth, halfHeight, halfWidth));
         }
+
+        public void Jump()
+        {
+            _jump = true;
+        }
         
-        public void Move(GameTime gameTime, Vector3 moveVector, float rotation, bool jump)
+        public void Update(GameTime gameTime, Vector3 moveVector, float rotation)
         {
             var oldPosition = _position;
-
-            var moveOffset = Vector3.Transform(moveVector * _speed, Matrix.CreateRotationY(rotation));
+            var elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var moveOffset = Vector3.Transform(moveVector * _speed * elapsedSeconds, Matrix.CreateRotationY(rotation));
 
             _rotation = rotation;
 
+            // move on X-axis
             _position += new Vector3(moveOffset.X, 0, 0);
 
             CreateBoundingBox();
@@ -63,10 +70,8 @@ namespace XnaCraft.Engine
                 oldPosition = _position;
             }
 
-            var elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-
-            if (_downfallSpeed == 0 && jump)
+            // move on Y-axis
+            if (_downfallSpeed == 0 && _jump)
             {
                 _downfallSpeed = -_jumpSpeed;
             }
@@ -74,6 +79,8 @@ namespace XnaCraft.Engine
             {
                 _downfallSpeed += G * elapsedSeconds;
             }
+
+            _jump = false;
 
             _position += new Vector3(0,  -_downfallSpeed * elapsedSeconds, 0);
 
@@ -89,6 +96,7 @@ namespace XnaCraft.Engine
                 oldPosition = _position;
             }
 
+            // move on Z-axis
             _position += new Vector3(0, 0, moveOffset.Z);
 
             CreateBoundingBox();
