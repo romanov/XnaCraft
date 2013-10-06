@@ -29,6 +29,9 @@ namespace XnaCraft
         private SpriteBatch _spriteBatch;
         private Texture2D _crosshairTexture;
 
+        private KeyboardState _previousKeyboardState = new KeyboardState();
+        private MouseState _previousMouseState = new MouseState();
+
         private readonly bool _isFullScreen = false;
 
         public XnaCraftGame()
@@ -114,9 +117,6 @@ namespace XnaCraft
             base.OnExiting(sender, args);
         }
 
-        private KeyboardState _previousKeyboardState = new KeyboardState();
-        private MouseState _previousMouseState = new MouseState();
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
@@ -201,14 +201,14 @@ namespace XnaCraft
             base.Update(gameTime);
         }
 
-        private void GenerateArea(bool buildAdjacent)
+        private void GenerateArea(bool rebuildAdjacent)
         {
             var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_WIDTH);
             var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
 
             _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
 
-            _worldGenerator.GenerateArea(new Point(cx, cy), 15, buildAdjacent);
+            _worldGenerator.GenerateArea(new Point(cx, cy), 15, rebuildAdjacent);
         }
 
         protected override void Draw(GameTime gameTime)

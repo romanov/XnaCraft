@@ -64,31 +64,33 @@ namespace XnaCraft.Engine
             _isRunning = false;
         }
 
-        public void GenerateArea(Point center, int radius, bool buildAdjacent = true)
+        public void GenerateArea(Point center, int radius, bool rebuildAdjacent = true)
         {
             var chunks = new List<Chunk>();
+            var chunkPositions = new List<Point>(radius * 8);
 
             chunks.AddRange(CreateChunkGroup(new[] { center }));
 
             for (var r = 0; r <= radius; r++)
             {
-                var chunkPositions = new Point[r * 8];
-
                 for (var i = r; i > -r; i--)
                 {
-                    chunkPositions[(r - i) * 4 + 0] = new Point(center.X - i, center.Y + r);
-                    chunkPositions[(r - i) * 4 + 1] = new Point(center.X + r, center.Y + i);
-                    chunkPositions[(r - i) * 4 + 2] = new Point(center.X + i, center.Y - r);
-                    chunkPositions[(r - i) * 4 + 3] = new Point(center.X - r, center.Y - i);
+                    chunkPositions.AddRange(new [] {
+                        new Point(center.X - i, center.Y + r),
+                        new Point(center.X + r, center.Y + i),
+                        new Point(center.X + i, center.Y - r),
+                        new Point(center.X - r, center.Y - i),
+                    }); 
                 }
 
                 chunks.AddRange(CreateChunkGroup(chunkPositions));
+                chunkPositions.Clear();
             }
 
-            _batchQueue.Add(new Batch { Chunks = chunks, BuildAdjacent = buildAdjacent });
+            _batchQueue.Add(new Batch { Chunks = chunks, RebuildAdjacent = rebuildAdjacent });
         }
 
-        private IEnumerable<Chunk> CreateChunkGroup(Point[] chunkPositions)
+        private IEnumerable<Chunk> CreateChunkGroup(IEnumerable<Point> chunkPositions)
         {
             foreach (var chunkPosition in chunkPositions)
             {
@@ -128,7 +130,7 @@ namespace XnaCraft.Engine
 
                     chunk.Build();
 
-                    if (batch.BuildAdjacent)
+                    if (batch.RebuildAdjacent)
                     {
                         foreach (var adjacentChunk in adjacentChunks.Values)
                         {
@@ -158,8 +160,6 @@ namespace XnaCraft.Engine
                         f * (cx * CHUNK_WIDTH + x) / (float)64,
                         f * (cy * CHUNK_WIDTH + z) / (float)64, 0) + 1) / 2) * (64));
 
-                    //var height = (x * z % 3) + 3;
-
                     for (var y = 0; y < CHUNK_HEIGHT; y++)
                     {
                         if (y <= height)
@@ -183,7 +183,7 @@ namespace XnaCraft.Engine
         private class Batch
         {
             public List<Chunk> Chunks { get; set; }
-            public bool BuildAdjacent { get; set; }
+            public bool RebuildAdjacent { get; set; }
         }
     }
 }
