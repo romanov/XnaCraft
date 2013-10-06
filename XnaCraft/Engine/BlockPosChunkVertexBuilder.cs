@@ -33,13 +33,13 @@ namespace XnaCraft.Engine
             return buffer;
         }
 
-        public void BeginBlock(Vector3 position, BlockDescriptor descriptor)
+        public void BeginBlock(Vector3 position, BlockDescriptor descriptor, int[, ,] neighbours)
         {
             _position = position;
             _descriptor = descriptor;
         }
 
-        public void AddFrontFace(int[, ,] neighbours)
+        public void AddFrontFace()
         {
             var uvMapping = GetUVMapping(_position);
 
@@ -54,7 +54,7 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddBackFace(int[, ,] neighbours)
+        public void AddBackFace()
         {
             var uvMapping = GetUVMapping(_position);
 
@@ -69,7 +69,7 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddTopFace(int[, ,] neighbours)
+        public void AddTopFace()
         {
             var uvMapping = GetUVMapping(_position);
 
@@ -84,7 +84,7 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddBottomFace(int[, ,] neighbours)
+        public void AddBottomFace()
         {
             var uvMapping = GetUVMapping(_position);
 
@@ -99,7 +99,7 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddLeftFace(int[, ,] neighbours)
+        public void AddLeftFace()
         {
             var uvMapping = GetUVMapping(_position);
 
@@ -114,7 +114,7 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddRightFace(int[, ,] neighbours)
+        public void AddRightFace()
         {
             var uvMapping = GetUVMapping(_position);
 

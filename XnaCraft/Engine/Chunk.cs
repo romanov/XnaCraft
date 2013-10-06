@@ -46,6 +46,71 @@ namespace XnaCraft.Engine
             _isGenerated = true;
         }
 
+        public void Build()
+        {
+            var builder = new ChunkVertexBuilder();
+
+            for (var x = 0; x < WorldGenerator.CHUNK_WIDTH; x++)
+            {
+                for (var y = 0; y < WorldGenerator.CHUNK_HEIGHT; y++)
+                {
+                    for (var z = 0; z < WorldGenerator.CHUNK_WIDTH; z++)
+                    {
+                        var descriptor = Blocks[x, y, z];
+
+                        if (descriptor != null)
+                        {
+                            var position = new Point3(X * WorldGenerator.CHUNK_WIDTH + x, y, Y * WorldGenerator.CHUNK_WIDTH + z);
+
+                            var top = y == WorldGenerator.CHUNK_HEIGHT - 1 || Blocks[x, y + 1, z] == null;
+                            var bottom = y != 0 && Blocks[x, y - 1, z] == null;
+                            var front = (z > 0 ? Blocks[x, y, z - 1] : _world.GetBlock(position + new Point3(0, 0, -1))) == null;
+                            var back = (z < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x, y, z + 1] : _world.GetBlock(position + new Point3(0, 0, 1))) == null;
+                            var left = (x > 0 ? Blocks[x - 1, y, z] : _world.GetBlock(position + new Point3(-1, 0, 0))) == null;
+                            var right = (x < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x + 1, y, z] : _world.GetBlock(position + new Point3(1, 0, 0))) == null;
+
+                            if (top || bottom || front || back || left || right)
+                            {
+                                builder.BeginBlock(position.ToVector3(), descriptor, GetBlockNeighbours(position));
+
+                                if (top)
+                                {
+                                    builder.AddTopFace();
+                                }
+                                if (bottom)
+                                {
+                                    builder.AddBottomFace();
+                                }
+                                if (front)
+                                {
+                                    builder.AddFrontFace();
+                                }
+                                if (back)
+                                {
+                                    builder.AddBackFace();
+                                }
+                                if (left)
+                                {
+                                    builder.AddLeftFace();
+                                }
+                                if (right)
+                                {
+                                    builder.AddRightFace();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!_device.IsDisposed)
+                {
+                    _buffer = builder.Build(_device);
+                }
+
+                _isBuilt = true;
+            }
+        }
+
         private int[, ,] GetBlockNeighbours(Point3 blockPosition)
         {
             var neighbours = new int[3, 3, 3];
@@ -64,68 +129,6 @@ namespace XnaCraft.Engine
             }
 
             return neighbours;
-        }
-
-        public void Build()
-        {
-            var builder = new ChunkVertexBuilder();
-
-            for (var x = 0; x < WorldGenerator.CHUNK_WIDTH; x++)
-            {
-                for (var y = 0; y < WorldGenerator.CHUNK_HEIGHT; y++)
-                {
-                    for (var z = 0; z < WorldGenerator.CHUNK_WIDTH; z++)
-                    {
-                        var descriptor = Blocks[x, y, z];
-
-                        if (descriptor != null)
-                        {
-                            var position = new Point3(X * WorldGenerator.CHUNK_WIDTH + x, y, Y * WorldGenerator.CHUNK_WIDTH + z);
-
-                            var top = y < WorldGenerator.CHUNK_HEIGHT - 1 ? Blocks[x, y + 1, z] : null;
-                            var bottom = y > 0 ? Blocks[x, y - 1, z] : null;
-                            var front = z > 0 ? Blocks[x, y, z - 1] : _world.GetBlock(position + new Point3(0, 0, -1));
-                            var back = z < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x, y, z + 1] : _world.GetBlock(position + new Point3(0, 0, 1));
-                            var left = x > 0 ? Blocks[x - 1, y, z] : _world.GetBlock(position + new Point3(-1, 0, 0));
-                            var right = x < WorldGenerator.CHUNK_WIDTH - 1 ? Blocks[x + 1, y, z] : _world.GetBlock(position + new Point3(1, 0, 0));
-
-                            builder.BeginBlock(position.ToVector3(), descriptor);
-
-                            if (top == null)
-                            {
-                                builder.AddTopFace(GetBlockNeighbours(position));
-                            }
-                            if (bottom == null && y != 0)
-                            {
-                                builder.AddBottomFace(GetBlockNeighbours(position));
-                            }
-                            if (front == null)
-                            {
-                                builder.AddFrontFace(GetBlockNeighbours(position));
-                            }
-                            if (back == null)
-                            {
-                                builder.AddBackFace(GetBlockNeighbours(position));
-                            }
-                            if (left == null)
-                            {
-                                builder.AddLeftFace(GetBlockNeighbours(position));
-                            }
-                            if (right == null)
-                            {
-                                builder.AddRightFace(GetBlockNeighbours(position));
-                            }
-                        }
-                    }
-                }
-
-                if (!_device.IsDisposed)
-                {
-                    _buffer = builder.Build(_device);
-                }
-
-                _isBuilt = true;
-            }
         }
     }
 }

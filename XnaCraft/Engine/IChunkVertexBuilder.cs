@@ -9,14 +9,14 @@ namespace XnaCraft.Engine
 {
     public interface IChunkVertexBuilder
     {
-        void BeginBlock(Vector3 position, BlockDescriptor descriptor);
+        void BeginBlock(Vector3 position, BlockDescriptor descriptor, int[, ,] neighbours);
 
-        void AddFrontFace(int[, ,] neighbours);
-        void AddBackFace(int[, ,] neighbours);
-        void AddTopFace(int[, ,] neighbours);
-        void AddBottomFace(int[, ,] neighbours);
-        void AddLeftFace(int[, ,] neighbours);
-        void AddRightFace(int[, ,] neighbours);
+        void AddFrontFace();
+        void AddBackFace();
+        void AddTopFace();
+        void AddBottomFace();
+        void AddLeftFace();
+        void AddRightFace();
 
         VertexBuffer Build(GraphicsDevice device);
     }

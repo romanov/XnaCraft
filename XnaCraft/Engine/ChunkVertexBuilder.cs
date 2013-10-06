@@ -24,15 +24,15 @@ namespace XnaCraft.Engine
         private BlockDescriptor _descriptor;
         private int[, ,] _neighbours;
 
-        public void BeginBlock(Vector3 position, BlockDescriptor descriptor)
+        public void BeginBlock(Vector3 position, BlockDescriptor descriptor, int[, ,] neighbours)
         {
             _position = position;
             _descriptor = descriptor;
+            _neighbours = neighbours;
         }
 
-        public void AddFrontFace(int[, ,] neighbours)
+        public void AddFrontFace()
         {
-            _neighbours = neighbours;
             var uvMapping = GetUVMapping(_descriptor.TextureFront);
 
             _faces.AddRange(new[] 
@@ -46,9 +46,8 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddBackFace(int[, ,] neighbours)
+        public void AddBackFace()
         {
-            _neighbours = neighbours;
             var uvMapping = GetUVMapping(_descriptor.TextureBack);
 
             _faces.AddRange(new[] 
@@ -62,9 +61,8 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddTopFace(int[, ,] neighbours)
+        public void AddTopFace()
         {
-            _neighbours = neighbours;
             var uvMapping = GetUVMapping(_descriptor.TextureTop);
 
             _faces.AddRange(new[] 
@@ -78,9 +76,8 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddBottomFace(int[, ,] neighbours)
+        public void AddBottomFace()
         {
-            _neighbours = neighbours;
             var uvMapping = GetUVMapping(_descriptor.TextureBottom);
 
             _faces.AddRange(new[] 
@@ -94,9 +91,8 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddLeftFace(int[, ,] neighbours)
+        public void AddLeftFace()
         {
-            _neighbours = neighbours;
             var uvMapping = GetUVMapping(_descriptor.TextureLeft);
 
             _faces.AddRange(new[] 
@@ -110,9 +106,8 @@ namespace XnaCraft.Engine
             });
         }
 
-        public void AddRightFace(int[, ,] neighbours)
+        public void AddRightFace()
         {
-            _neighbours = neighbours;
             var uvMapping = GetUVMapping(_descriptor.TextureRight);
 
             _faces.AddRange(new[] 
@@ -128,9 +123,8 @@ namespace XnaCraft.Engine
 
         private int GetOcclusion(Dominant dominant, XDir xDir, YDir yDir, ZDir zDir) 
         {
-            return CalculateOcclusion(GetOcclusionValues( GetOcclusionMapping(dominant, xDir, yDir, zDir)));
+            return CalculateOcclusion(GetOcclusionValues(GetOcclusionMapping(dominant, xDir, yDir, zDir)));
         }
-
 
         private Point3 GetOcclusionValues(Point3[] mapping)
         {
