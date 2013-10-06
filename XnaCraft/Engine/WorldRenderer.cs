@@ -32,10 +32,6 @@ namespace XnaCraft.Engine
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             //_graphicsDevice.RasterizerState = new RasterizerState { FillMode = FillMode.WireFrame, CullMode = CullMode.None };
 
-            var faces = 0;
-
-            var chunks = world.GetVisibleChunks(camera);
-
             _effect.Parameters["World"].SetValue(Matrix.Identity);
             _effect.Parameters["View"].SetValue(camera.View);
             _effect.Parameters["Projection"].SetValue(camera.Projection);
@@ -48,6 +44,11 @@ namespace XnaCraft.Engine
             _effect.Parameters["BlockTexture"].SetValue(_textureAtlas);
 
             _effect.CurrentTechnique.Passes[0].Apply();
+
+            var chunks = world.GetVisibleChunks(camera);
+            var faces = 0;
+
+            _diagnosticsService.SetInfoValue("Chunks", chunks.Count());
 
             foreach (var chunk in chunks)
             {

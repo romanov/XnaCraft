@@ -28,8 +28,7 @@ namespace XnaCraft.Engine
 
         private readonly bool _useDebugTextures = false;
 
-        private readonly BlockingCollection<QueueItem> _chunksToGenerate = new BlockingCollection<QueueItem>();
-        private readonly List<Chunk> _chunksToEnqueue = new List<Chunk>();
+        private readonly BlockingCollection<Batch> _batchQueue = new BlockingCollection<Batch>();
 
         private volatile bool _isRunning = true;
 
@@ -67,38 +66,40 @@ namespace XnaCraft.Engine
 
         public void GenerateArea(Point center, int radius, bool buildAdjacent = true)
         {
-            var chunksToGenerate = new List<Chunk>();
+            var chunks = new List<Chunk>();
 
-            _chunksToEnqueue.Clear();
-
-            TryEnqueueChunk(_chunksToEnqueue, center.X, center.Y);
+            chunks.AddRange(CreateChunkGroup(new[] { center }));
 
             for (var r = 0; r <= radius; r++)
             {
+                var chunkPositions = new Point[r * 8];
+
                 for (var i = r; i > -r; i--)
                 {
-                    TryEnqueueChunk(_chunksToEnqueue, center.X - i, center.Y + r);
-                    TryEnqueueChunk(_chunksToEnqueue, center.X + r, center.Y + i);
-                    TryEnqueueChunk(_chunksToEnqueue, center.X + i, center.Y - r);
-                    TryEnqueueChunk(_chunksToEnqueue, center.X - r, center.Y - i);
+                    chunkPositions[(r - i) * 4 + 0] = new Point(center.X - i, center.Y + r);
+                    chunkPositions[(r - i) * 4 + 1] = new Point(center.X + r, center.Y + i);
+                    chunkPositions[(r - i) * 4 + 2] = new Point(center.X + i, center.Y - r);
+                    chunkPositions[(r - i) * 4 + 3] = new Point(center.X - r, center.Y - i);
                 }
+
+                chunks.AddRange(CreateChunkGroup(chunkPositions));
             }
 
-            foreach (var chunk in _chunksToEnqueue)
-            {
-                _chunksToGenerate.Add(new QueueItem { Chunk = chunk, BuildAdjacent = buildAdjacent });
-            }
+            _batchQueue.Add(new Batch { Chunks = chunks, BuildAdjacent = buildAdjacent });
         }
 
-        private void TryEnqueueChunk(List<Chunk> enqueuedChunks, int x, int y)
+        private IEnumerable<Chunk> CreateChunkGroup(Point[] chunkPositions)
         {
-            if (!_world.HasChunk(x, y))
+            foreach (var chunkPosition in chunkPositions)
             {
-                var chunk = new Chunk(_graphicsDevice, x, y);
+                if (!_world.HasChunk(chunkPosition.X, chunkPosition.Y))
+                {
+                    var chunk = new Chunk(_graphicsDevice, chunkPosition.X, chunkPosition.Y);
 
-                _world.AddChunk(x, y, chunk);
+                    _world.AddChunk(chunk.X, chunk.Y, chunk);
 
-                enqueuedChunks.Add(chunk);
+                    yield return chunk;   
+                }
             }
         }
 
@@ -106,35 +107,39 @@ namespace XnaCraft.Engine
         {
             while (_isRunning)
             {
-                var item = _chunksToGenerate.Take();
+                var batch = _batchQueue.Take();
 
-                _diagnosticsService.SetInfoValue("Queue", _chunksToGenerate.Count);
+                var queueLength = 2 * (batch.Chunks.Count + _batchQueue.Sum(x => x.Chunks.Count));
+                _diagnosticsService.SetInfoValue("Queue", queueLength);
 
-                var chunk = item.Chunk;
-
-                if (!chunk.IsGenerated)
+                foreach (var chunk in batch.Chunks)
                 {
                     var blocks = GenerateChunk(chunk.X, chunk.Y);
                     chunk.SetBlocks(blocks);
+
+                    _diagnosticsService.SetInfoValue("Queue", --queueLength);
                 }
 
-                var adjacentChunks = _world.GetAdjacentChunks(chunk);
+                var lookup = new HashSet<Chunk>(batch.Chunks);
 
-                if (adjacentChunks.Values.All(c => c.IsGenerated))
+                foreach (var chunk in batch.Chunks)
                 {
+                    var adjacentChunks = _world.GetAdjacentChunks(chunk);
+
                     chunk.Build(adjacentChunks);
 
-                    if (item.BuildAdjacent)
+                    if (batch.BuildAdjacent)
                     {
                         foreach (var adjacentChunk in adjacentChunks.Values)
                         {
-                            _chunksToGenerate.Add(new QueueItem { Chunk = adjacentChunk, BuildAdjacent = false });
+                            if (!batch.Chunks.Contains(adjacentChunk))
+                            {
+                                adjacentChunk.Build(_world.GetAdjacentChunks(adjacentChunk));
+                            }
                         }
                     }
-                }
-                else
-                {
-                    _chunksToGenerate.Add(item);
+
+                    _diagnosticsService.SetInfoValue("Queue", --queueLength);
                 }
             }
         }
@@ -175,9 +180,9 @@ namespace XnaCraft.Engine
             return chunk;
         }
 
-        private class QueueItem
+        private class Batch
         {
-            public Chunk Chunk { get; set; }
+            public List<Chunk> Chunks { get; set; }
             public bool BuildAdjacent { get; set; }
         }
     }

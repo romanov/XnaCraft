@@ -98,7 +98,7 @@ namespace XnaCraft
 
             chunk.Build(new Dictionary<Point,Chunk>());
 
-            _player = new Player(_world, new Vector3(WorldGenerator.CHUNK_WIDTH / 2 - 0.5f, startHeight + 1.4f, WorldGenerator.CHUNK_WIDTH / 2 - 0.5f));
+            _player = new Player(_world, new Vector3(WorldGenerator.CHUNK_WIDTH / 2 - 0.5f, startHeight + 1.41f, WorldGenerator.CHUNK_WIDTH / 2 - 0.5f));
 
             GenerateArea(false);
         }

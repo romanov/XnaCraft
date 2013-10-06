@@ -19,18 +19,15 @@ namespace XnaCraft.Engine
 
         public Chunk GetChunk(int x, int y)
         {
-            lock (_chunks)
-            {
-                var chunk = default(Chunk);
+            var chunk = default(Chunk);
 
-                if (_chunks.TryGetValue(new Point(x, y), out chunk))
-                {
-                    return chunk;
-                }
-                else
-                {
-                    return null;
-                }
+            if (_chunks.TryGetValue(new Point(x, y), out chunk))
+            {
+                return chunk.IsGenerated ? chunk : null;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -49,37 +46,24 @@ namespace XnaCraft.Engine
 
         public void AddChunk(int x, int y, Chunk chunk)
         {
-            lock (_chunks)
-            {
-                _chunks.Add(new Point(x, y), chunk);
-            }
+            _chunks.Add(new Point(x, y), chunk);
         }
 
         public bool HasChunk(int x, int y)
         {
-            lock (_chunks)
-            {
-                return _chunks.ContainsKey(new Point(x, y));
-            }
+            return _chunks.ContainsKey(new Point(x, y));
         }
 
         public bool CheckCollision(BoundingBox boundingBox)
         {
-            var minX = (int)Math.Floor(boundingBox.Min.X);
-            var minY = (int)Math.Floor(boundingBox.Min.Y);
-            var minZ = (int)Math.Floor(boundingBox.Min.Z);
-            var maxX = (int)Math.Ceiling(boundingBox.Max.X);
-            var maxY = (int)Math.Ceiling(boundingBox.Max.Y);
-            var maxZ = (int)Math.Ceiling(boundingBox.Max.Z);
-
-            var blocks = GetBlockRange(minX, minY, minZ, maxX, maxY, maxZ);
+            var blocks = GetBlockRange(boundingBox.Min.ToPoint3(), boundingBox.Max.ToPoint3());
 
             return blocks.Any(b => b.BoundingBox.Intersects(boundingBox));
         }
 
         public IEnumerable<Block> RayCast(Ray ray, Point3 center, int radius, bool returnEmptyBlocks = false)
         {
-            var blocks = GetBlockRange(center.X - radius, center.Y - radius, center.Z - radius, center.X + radius, center.Y + radius, center.Z + radius, returnEmptyBlocks);
+            var blocks = GetBlockRange(center - radius, center + radius, returnEmptyBlocks);
 
             var hitBlocks = blocks
                 .Select(b => new { Result = ray.Intersects(b.BoundingBox), Block = b })
@@ -90,13 +74,13 @@ namespace XnaCraft.Engine
             return hitBlocks;
         }
 
-        private IEnumerable<Block> GetBlockRange(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, bool returnEmptyBlocks = false)
+        private IEnumerable<Block> GetBlockRange(Point3 min, Point3 max, bool returnEmptyBlocks = false)
         {
-            for (var x = minX; x <= maxX; x++)
+            for (var x = min.X; x <= max.X; x++)
             {
-                for (var y = minY; y <= maxY; y++)
+                for (var y = min.Y; y <= max.Y; y++)
                 {
-                    for (var z = minZ; z <= maxZ; z++)
+                    for (var z = min.Z; z <= max.Z; z++)
                     {
                         var cx = (int)Math.Floor(x / (float)WorldGenerator.CHUNK_WIDTH);
                         var cy = (int)Math.Floor(z / (float)WorldGenerator.CHUNK_WIDTH);
@@ -157,8 +141,6 @@ namespace XnaCraft.Engine
                     }
                 }
             }
-
-            //_diagnosticsService.SetInfoValue("Chunks", chunks.Count);
 
             return chunks;
         }

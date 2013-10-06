@@ -10,7 +10,7 @@ namespace XnaCraft.Engine
     {
         public static Point3 ToPoint3(this Vector3 vector)
         {
-            return new Point3((int)Math.Floor(vector.X), (int)Math.Floor(vector.Y), (int)Math.Floor(vector.Z));
+            return new Point3((int)Math.Round(vector.X), (int)Math.Round(vector.Y), (int)Math.Round(vector.Z));
         }
     }
 
@@ -44,6 +44,16 @@ namespace XnaCraft.Engine
         public static bool operator ==(Point3 a, Point3 b)
         {
             return a.Equals(b);
+        }
+
+        public static Point3 operator +(Point3 a, int value)
+        {
+            return new Point3(a.X + value, a.Y + value, a.Z + value);
+        }
+
+        public static Point3 operator -(Point3 a, int value)
+        {
+            return new Point3(a.X - value, a.Y - value, a.Z - value);
         }
 
         public override bool Equals(object obj)
