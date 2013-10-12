@@ -55,7 +55,10 @@ namespace XnaCraft.Engine
                 BlockFaceTexture.DebugBack,
                 BlockFaceTexture.DebugLeft,
                 BlockFaceTexture.DebugRight);
+        }
 
+        public void StartGeneration()
+        {
             Task.Factory.StartNew(ProcessGenerationQueue);
         }
 
@@ -87,7 +90,10 @@ namespace XnaCraft.Engine
                 chunkPositions.Clear();
             }
 
-            _batchQueue.Add(new Batch { Chunks = chunks, RebuildAdjacent = rebuildAdjacent });
+            if (chunks.Any())
+            {
+                _batchQueue.Add(new Batch { Chunks = chunks, RebuildAdjacent = rebuildAdjacent });
+            }
         }
 
         private IEnumerable<Chunk> CreateChunkGroup(IEnumerable<Point> chunkPositions)

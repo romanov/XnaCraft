@@ -101,14 +101,14 @@ namespace XnaCraft.Engine
                         }
                     }
                 }
-
-                if (!_device.IsDisposed)
-                {
-                    _buffer = builder.Build(_device);
-                }
-
-                _isBuilt = true;
             }
+
+            if (!_device.IsDisposed)
+            {
+                _buffer = builder.Build(_device);
+            }
+
+            _isBuilt = true;
         }
 
         private int[, ,] GetBlockNeighbours(Point3 blockPosition)

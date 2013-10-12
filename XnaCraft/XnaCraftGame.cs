@@ -65,6 +65,23 @@ namespace XnaCraft
         protected override void Initialize()
         {
             base.Initialize();
+
+            _world = new World();
+            _player = new Player(_world);
+            _camera = new Camera(GraphicsDevice);
+
+            GenerateWorld();
+
+            _player.Position = GetPlayerStartingPosition();
+
+            _inputController = new InputController(this, _world, _camera, _player);
+            _worldRenderer = new WorldRenderer(this);
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _crosshairTexture = Content.Load<Texture2D>("crosshair");
         }
 
         protected override void OnActivated(object sender, EventArgs args)
@@ -74,24 +91,11 @@ namespace XnaCraft
             base.OnActivated(sender, args);
         }
 
-        protected override void LoadContent()
+        private void GenerateWorld()
         {
-            _camera = new Camera(GraphicsDevice);
-
-            _world = new World();
             _worldGenerator = new WorldGenerator(_world, GraphicsDevice, Content, _diagnosticsService);
-            _worldRenderer = new WorldRenderer(this);
-
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _crosshairTexture = Content.Load<Texture2D>("crosshair");
 
             var startChunk = _worldGenerator.GenerateChunk(0, 0);
-            var startHeight = WorldGenerator.CHUNK_HEIGHT;
-
-            while (startChunk[WorldGenerator.CHUNK_WIDTH / 2 - 1, startHeight - 1, WorldGenerator.CHUNK_WIDTH / 2 - 1] == null)
-            {
-                startHeight--;
-            }
 
             var chunk = new Chunk(GraphicsDevice, _world, 0, 0);
             chunk.SetBlocks(startChunk);
@@ -100,15 +104,21 @@ namespace XnaCraft
 
             chunk.Build();
 
-            _player = new Player(_world, new Vector3(WorldGenerator.CHUNK_WIDTH / 2 - 0.5f, startHeight + 1.41f, WorldGenerator.CHUNK_WIDTH / 2 - 0.5f));
-
-            _inputController = new InputController(this, _world, _camera, _player);
-
-            GenerateArea(false);
+            _worldGenerator.GenerateArea(new Point(0, 0), 15, true);
+            _worldGenerator.StartGeneration();
         }
 
-        protected override void UnloadContent()
+        private Vector3 GetPlayerStartingPosition()
         {
+            var startHeight = WorldGenerator.CHUNK_HEIGHT;
+            var blocks = _world.GetChunk(0, 0).Blocks;
+
+            while (blocks[WorldGenerator.CHUNK_WIDTH / 2 - 1, startHeight - 1, WorldGenerator.CHUNK_WIDTH / 2 - 1] == null)
+            {
+                startHeight--;
+            }
+
+            return new Vector3(WorldGenerator.CHUNK_WIDTH / 2 - 0.5f, startHeight + 1.41f, WorldGenerator.CHUNK_WIDTH / 2 - 0.5f);
         }
 
         protected override void OnExiting(object sender, EventArgs args)
@@ -127,20 +137,15 @@ namespace XnaCraft
             {
                 _inputController.Update(gameTime);
 
-                GenerateArea(true);
+                var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_WIDTH);
+                var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
+
+                _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
+
+                _worldGenerator.GenerateArea(new Point(cx, cy), 15, true);
             }
 
             base.Update(gameTime);
-        }
-
-        private void GenerateArea(bool rebuildAdjacent)
-        {
-            var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_WIDTH);
-            var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
-
-            _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
-
-            _worldGenerator.GenerateArea(new Point(cx, cy), 15, rebuildAdjacent);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -150,7 +155,13 @@ namespace XnaCraft
             _worldRenderer.Render(_world, _camera);
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_crosshairTexture, new Vector2((GraphicsDevice.Viewport.Width - _crosshairTexture.Width) / 2, (GraphicsDevice.Viewport.Height - _crosshairTexture.Height) / 2), Color.White);
+
+            var crosshairPosition = new Vector2(
+                (GraphicsDevice.Viewport.Width - _crosshairTexture.Width) / 2, 
+                (GraphicsDevice.Viewport.Height - _crosshairTexture.Height) / 2);
+
+            _spriteBatch.Draw(_crosshairTexture, crosshairPosition, Color.White);
+
             _spriteBatch.End();
 
             base.Draw(gameTime);

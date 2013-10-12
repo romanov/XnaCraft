@@ -23,14 +23,23 @@ namespace XnaCraft.Engine
         private const float G = 10;
         private float _downfallSpeed = 0;
 
-        public Vector3 Position { get { return _position; } }
+        public Vector3 Position 
+        { 
+            get 
+            { 
+                return _position; 
+            }
+            set
+            {
+                _position = value;
+            }
+        }
 
         public BoundingBox BoundingBox { get { return _boundingBox; } }
 
-        public Player(World world, Vector3 position)
+        public Player(World world)
         {
             _world = world;
-            _position = position;
         }
 
         private void CreateBoundingBox()

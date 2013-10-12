@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
+using System.Threading.Tasks;
 
 namespace XnaCraft.Engine
 {
@@ -214,14 +215,17 @@ namespace XnaCraft.Engine
 
             chunk.Blocks[bx, by, bz] = grassDescriptor;
 
-            var adjacentChunks = GetAdjacentChunks(chunk);
-
-            chunk.Build();
-
-            foreach (var adjacentChunk in adjacentChunks.Values)
+            Task.Factory.StartNew(() =>
             {
-                adjacentChunk.Build();
-            }
+                var adjacentChunks = GetAdjacentChunks(chunk);
+
+                chunk.Build();
+
+                foreach (var adjacentChunk in adjacentChunks.Values)
+                {
+                    adjacentChunk.Build();
+                }
+            });
         }
 
         public void RemoveBlock(Block block)
