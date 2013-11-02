@@ -127,11 +127,12 @@
     <Compile Include="Engine\ChunkVertexBuilder.cs" />
     <Compile Include="Engine\IBlockDescriptorFactory.cs" />
     <Compile Include="Engine\IChunkVertexBuilder.cs" />
-    <Compile Include="Engine\Input\Commands\AddBlockCommand.cs" />
+    <Compile Include="Engine\Input\IInputHandler.cs" />
+    <Compile Include="GameLogic\InputCommands\AddBlockCommand.cs" />
+    <Compile Include="GameLogic\InputCommands\JumpCommand.cs" />
+    <Compile Include="GameLogic\InputCommands\RemoveBlockCommand.cs" />
     <Compile Include="Engine\Input\InputState.cs" />
-    <Compile Include="Engine\Input\Commands\JumpCommand.cs" />
-    <Compile Include="Engine\Input\Commands\RemoveBlockCommand.cs" />
-    <Compile Include="Engine\Input\ICommand.cs" />
+    <Compile Include="Engine\Input\IInputCommand.cs" />
     <Compile Include="Engine\Input\InputController.cs" />
     <Compile Include="Engine\IWorldRenderer.cs" />
     <Compile Include="Engine\Logic.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Engine\Vector3Extensions.cs" />
     <Compile Include="Engine\World.cs" />
     <Compile Include="GameLogic\Init.cs" />
+    <Compile Include="GameLogic\InputHandling.cs" />
     <Compile Include="GameLogic\WorldGeneration.cs" />
     <Compile Include="GameLogic\WorldRendering.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Microsoft.Xna.Framework.Input;
+using XnaCraft.Engine;
+using XnaCraft.Engine.Input;
 
-namespace XnaCraft.Engine.Input.Commands
+namespace XnaCraft.GameLogic.InputCommands
 {
-    class RemoveBlockCommand : ICommand
+    class RemoveBlockCommand : IInputCommand
     {
         private readonly World _world;
         private readonly Camera _camera;

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Microsoft.Xna.Framework.Input;
+using XnaCraft.Engine;
+using XnaCraft.Engine.Input;
 
-namespace XnaCraft.Engine.Input.Commands
+namespace XnaCraft.GameLogic.InputCommands
 {
-    class AddBlockCommand : ICommand
+    class AddBlockCommand : IInputCommand
     {
         private readonly World _world;
         private readonly Camera _camera;
@@ -26,10 +25,10 @@ namespace XnaCraft.Engine.Input.Commands
 
         public void Execute()
         {
-            var blocks = _world.RayCast(_camera.Ray, _player.Position.ToPoint3(), 5, true);
-            var emptyBlocks = blocks.TakeWhile(x => x.IsEmpty);
+            var blocks = _world.RayCast(_camera.Ray, _player.Position.ToPoint3(), 5, true).ToList();
+            var emptyBlocks = blocks.TakeWhile(x => x.IsEmpty).ToList();
 
-            if (emptyBlocks.Any() && blocks.Count() != emptyBlocks.Count())
+            if (emptyBlocks.Any() && blocks.Count != emptyBlocks.Count)
             {
                 var block = emptyBlocks.Last();
 

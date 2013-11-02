@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace XnaCraft.Engine.Input
 {
-    class InputState
+    public class InputState
     {
         public KeyboardState PreviousKeyboardState;
         public KeyboardState CurrentKeyboardState;

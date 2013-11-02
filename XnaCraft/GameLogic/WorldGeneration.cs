@@ -28,8 +28,6 @@ namespace XnaCraft.GameLogic
 
         public void OnUpdate(GameTime gameTime)
         {
-            _inputController.Update(gameTime);
-
             var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_WIDTH);
             var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
 

@@ -50,11 +50,6 @@ namespace XnaCraft
 #endif
         }
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-        }
-
         protected override void LoadContent()
         {
             var builder = new ContainerBuilder();
@@ -78,13 +73,23 @@ namespace XnaCraft
                 .As<ILogic>()
                 .SingleInstance();
 
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .AssignableTo<IInputHandler>()
+                .As<IInputHandler>()
+                .SingleInstance();
+
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .AssignableTo<IInputCommand>()
+                .As<IInputCommand>()
+                .SingleInstance();
+
             var container = builder.Build();
 
-            var logicScripts = container.Resolve<IEnumerable<ILogic>>();
+            var logicScripts = container.Resolve<IEnumerable<ILogic>>().ToArray();
 
-            _initLogicScripts = logicScripts.Where(s => typeof(IInitLogic).IsAssignableFrom(s.GetType())).Cast<IInitLogic>().ToArray();
-            _updateLogicScripts = logicScripts.Where(s => typeof(IUpdateLogic).IsAssignableFrom(s.GetType())).Cast<IUpdateLogic>().ToArray();
-            _renderLogicScripts = logicScripts.Where(s => typeof(IRenderLogic).IsAssignableFrom(s.GetType())).Cast<IRenderLogic>().ToArray();
+            _initLogicScripts = logicScripts.OfType<IInitLogic>().ToArray();
+            _updateLogicScripts = logicScripts.OfType<IUpdateLogic>().ToArray();
+            _renderLogicScripts = logicScripts.OfType<IRenderLogic>().ToArray();
 
             foreach (var script in _initLogicScripts)
             {
@@ -113,7 +118,7 @@ namespace XnaCraft
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
-                this.Exit();
+                Exit();
             }
 
             if (IsActive)
