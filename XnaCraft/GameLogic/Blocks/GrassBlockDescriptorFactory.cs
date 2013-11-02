@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using XnaCraft.Engine;
 
-namespace XnaCraft.Engine.Blocks
+namespace XnaCraft.GameLogic.Blocks
 {
     class GrassBlockDescriptorFactory : IBlockDescriptorFactory
     {
         public BlockDescriptor CreateDescriptor()
         {
             return new BlockDescriptor(BlockType.Grass,
-                BlockFaceTexture.GrassTop,
-                BlockFaceTexture.Dirt,
-                BlockFaceTexture.GrassSide);
+                BlockFaceTextures.GrassTop,
+                BlockFaceTextures.Dirt,
+                BlockFaceTextures.GrassSide);
         }
     }
 }

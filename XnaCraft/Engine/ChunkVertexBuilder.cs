@@ -211,7 +211,7 @@ namespace XnaCraft.Engine
 
         private UVMapping GetUVMapping(BlockFaceTexture texture)
         {
-            var offset = (int)texture;
+            var offset = texture.Offset;
             var step = 1.0f / 16;//Enum.GetValues(typeof(BlockFaceTexture)).Length;
             var uStart = offset * step;
             var uEnd = (offset + 1) * step;

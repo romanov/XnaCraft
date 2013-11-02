@@ -79,6 +79,11 @@ namespace XnaCraft
                 .As<IInputCommand>()
                 .SingleInstance();
 
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .AssignableTo<IBlockDescriptorFactory>()
+                .As<IBlockDescriptorFactory>()
+                .SingleInstance();
+
             var container = builder.Build();
 
             var logicScripts = container.Resolve<IEnumerable<ILogic>>().ToArray();

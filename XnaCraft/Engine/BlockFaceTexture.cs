@@ -5,16 +5,13 @@ using System.Text;
 
 namespace XnaCraft.Engine
 {
-    public enum BlockFaceTexture
+    public class BlockFaceTexture
     {
-        GrassTop,
-        Dirt,
-        GrassSide,
-        DebugTop,
-        DebugBottom,
-        DebugFront,
-        DebugBack,
-        DebugLeft,
-        DebugRight,
+        public int Offset { get; private set; }
+
+        public BlockFaceTexture(int offset)
+        {
+            Offset = offset;
+        }
     }
 }

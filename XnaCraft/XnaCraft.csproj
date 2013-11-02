@@ -110,15 +110,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\BlockFaceTexture.cs" />
     <Compile Include="Engine\Diagnostics\DiagnosticsService.cs" />
     <Compile Include="Engine\Diagnostics\FrameCounter.cs" />
-    <Compile Include="Engine\BlockFaceTexture.cs" />
+    <Compile Include="GameLogic\Blocks\BlockFaceTextures.cs" />
     <Compile Include="Engine\BlockManager.cs" />
     <Compile Include="Engine\BlockPosChunkVertexBuilder.cs" />
     <Compile Include="Engine\BlockPosWorldRenderer.cs" />
-    <Compile Include="Engine\Blocks\DebugBlockDescriptorFactory.cs" />
-    <Compile Include="Engine\Blocks\DirtBlockDescriptorFactory.cs" />
-    <Compile Include="Engine\Blocks\GrassBlockDescriptorFactory.cs" />
+    <Compile Include="GameLogic\Blocks\DebugBlockDescriptorFactory.cs" />
+    <Compile Include="GameLogic\Blocks\DirtBlockDescriptorFactory.cs" />
+    <Compile Include="GameLogic\Blocks\GrassBlockDescriptorFactory.cs" />
     <Compile Include="Engine\Camera.cs" />
     <Compile Include="Engine\BlockDescriptor.cs" />
     <Compile Include="Engine\BlockType.cs" />
@@ -127,7 +128,10 @@
     <Compile Include="Engine\ChunkVertexBuilder.cs" />
     <Compile Include="Engine\IBlockDescriptorFactory.cs" />
     <Compile Include="Engine\IChunkVertexBuilder.cs" />
+    <Compile Include="Engine\IInitLogic.cs" />
     <Compile Include="Engine\Input\IInputHandler.cs" />
+    <Compile Include="Engine\IRenderLogic.cs" />
+    <Compile Include="Engine\IUpdateLogic.cs" />
     <Compile Include="GameLogic\InputCommands\AddBlockCommand.cs" />
     <Compile Include="GameLogic\InputCommands\JumpCommand.cs" />
     <Compile Include="GameLogic\InputCommands\RemoveBlockCommand.cs" />
@@ -135,7 +139,7 @@
     <Compile Include="Engine\Input\IInputCommand.cs" />
     <Compile Include="Engine\Input\InputController.cs" />
     <Compile Include="Engine\IWorldRenderer.cs" />
-    <Compile Include="Engine\Logic.cs" />
+    <Compile Include="Engine\ILogic.cs" />
     <Compile Include="Engine\PerlinGenerator.cs" />
     <Compile Include="Engine\Player.cs" />
     <Compile Include="Engine\Point3.cs" />

@@ -10,9 +10,9 @@ namespace XnaCraft.Engine
     public class BlockDescriptor
     {
         public BlockType BlockType { get; private set; }
+
         public BlockFaceTexture TextureTop { get; private set; }
         public BlockFaceTexture TextureBottom { get; private set; }
-
         public BlockFaceTexture TextureFront { get; private set; }
         public BlockFaceTexture TextureBack { get; private set; }
         public BlockFaceTexture TextureLeft { get; private set; }
@@ -29,7 +29,7 @@ namespace XnaCraft.Engine
             TextureRight = textureSide;
         }
 
-        public BlockDescriptor(BlockType blockType, BlockFaceTexture textureTop, BlockFaceTexture textureBottom, 
+        public BlockDescriptor(BlockType blockType, BlockFaceTexture textureTop, BlockFaceTexture textureBottom,
             BlockFaceTexture textureFront, BlockFaceTexture textureBack, BlockFaceTexture textureLeft, BlockFaceTexture textureRight)
         {
             BlockType = blockType;

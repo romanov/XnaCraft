@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using XnaCraft.Engine;
 
-namespace XnaCraft.Engine.Blocks
+namespace XnaCraft.GameLogic.Blocks
 {
     class DirtBlockDescriptorFactory : IBlockDescriptorFactory
     {
         public BlockDescriptor CreateDescriptor()
         {
             return new BlockDescriptor(BlockType.Dirt,
-                BlockFaceTexture.Dirt,
-                BlockFaceTexture.Dirt,
-                BlockFaceTexture.Dirt);
+                BlockFaceTextures.Dirt,
+                BlockFaceTextures.Dirt,
+                BlockFaceTextures.Dirt);
         }
     }
 }

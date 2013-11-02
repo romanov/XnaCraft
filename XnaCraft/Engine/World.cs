@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using System.Threading.Tasks;
+using XnaCraft.GameLogic.Blocks;
 
 namespace XnaCraft.Engine
 {
@@ -207,9 +208,9 @@ namespace XnaCraft.Engine
             var chunk = GetChunk(cx, cy);
 
             var grassDescriptor = new BlockDescriptor(BlockType.Grass,
-                BlockFaceTexture.GrassTop,
-                BlockFaceTexture.Dirt,
-                BlockFaceTexture.GrassSide);
+                BlockFaceTextures.GrassTop,
+                BlockFaceTextures.Dirt,
+                BlockFaceTextures.GrassSide);
 
             chunk.Blocks[bx, by, bz] = grassDescriptor;
 
