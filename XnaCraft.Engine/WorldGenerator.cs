@@ -18,22 +18,20 @@ namespace XnaCraft.Engine
         public const int GRUNT_LEVEL = 128;
 
         private readonly World _world;
-        private readonly BlockManager _blockManager;
         private readonly GraphicsDevice _graphicsDevice;
+        private readonly IChunkGenerator _chunkGenerator;
         private readonly DiagnosticsService _diagnosticsService;
-        private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(Utils.GetRandomInteger());
 
-        private readonly bool _useDebugTextures = false;
 
         private readonly BlockingCollection<Batch> _batchQueue = new BlockingCollection<Batch>();
 
         private volatile bool _isRunning = true;
 
-        public WorldGenerator(World world, BlockManager blockManager, GraphicsDevice graphicsDevice, ContentManager contentManager, DiagnosticsService diagnosticsService)
+        public WorldGenerator(World world, GraphicsDevice graphicsDevice, IChunkGenerator chunkGenerator, DiagnosticsService diagnosticsService)
         {
             _world = world;
-            _blockManager = blockManager;
             _graphicsDevice = graphicsDevice;
+            _chunkGenerator = chunkGenerator;
             _diagnosticsService = diagnosticsService;
         }
 
@@ -134,36 +132,7 @@ namespace XnaCraft.Engine
 
         public BlockDescriptor[, ,] GenerateChunk(int cx, int cy)
         {
-            var f = 2;
-
-            var chunk = new BlockDescriptor[CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH];
-
-            for (var x = 0; x < CHUNK_WIDTH; x++)
-            {
-                for (var z = 0; z < CHUNK_WIDTH; z++)
-                {
-                    var height = GRUNT_LEVEL + (int)(((_perlinGenerator.Noise(
-                        f * (cx * CHUNK_WIDTH + x) / (float)64,
-                        f * (cy * CHUNK_WIDTH + z) / (float)64, 0) + 1) / 2) * (64));
-
-                    for (var y = 0; y < CHUNK_HEIGHT; y++)
-                    {
-                        if (y <= height)
-                        {
-                            if (_useDebugTextures)
-                            {
-                                chunk[x, y, z] = _blockManager.GetDescriptor(BlockType.Debug);
-                            }
-                            else
-                            {
-                                chunk[x, y, z] = y == height ? _blockManager.GetDescriptor(BlockType.Grass) : _blockManager.GetDescriptor(BlockType.Dirt);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return chunk;
+            return _chunkGenerator.Generate(cx, cy);
         }
 
         private class Batch

@@ -10,7 +10,7 @@ namespace XnaCraft.GameLogic.Blocks
     {
         public BlockDescriptor CreateDescriptor()
         {
-            return new BlockDescriptor(BlockType.Grass,
+            return new BlockDescriptor(BlockTypes.Grass,
                 BlockFaceTextures.GrassTop,
                 BlockFaceTextures.Dirt,
                 BlockFaceTextures.GrassSide);

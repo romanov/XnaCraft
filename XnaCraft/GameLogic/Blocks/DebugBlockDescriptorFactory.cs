@@ -10,7 +10,7 @@ namespace XnaCraft.GameLogic.Blocks
     {
         public BlockDescriptor CreateDescriptor()
         {
-            return new BlockDescriptor(BlockType.Debug,
+            return new BlockDescriptor(BlockTypes.Debug,
                 BlockFaceTextures.DebugTop,
                 BlockFaceTextures.DebugBottom,
                 BlockFaceTextures.DebugFront,

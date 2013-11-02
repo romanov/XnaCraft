@@ -10,6 +10,7 @@ using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
 using Autofac;
 using System.Reflection;
+using XnaCraft.GameLogic.Blocks;
 
 namespace XnaCraft
 {
@@ -63,6 +64,7 @@ namespace XnaCraft
             builder.RegisterType<WorldRenderer>().SingleInstance();
             builder.RegisterType<DiagnosticsService>().SingleInstance();
             builder.RegisterType<WorldGenerator>().SingleInstance();
+            builder.RegisterType<BasicChunkGenerator>().As<IChunkGenerator>().InstancePerDependency();
 
             var assembliesToScan = new[] {"XnaCraft", "XnaCraft.Engine"}.Select(Assembly.Load).ToArray();
 

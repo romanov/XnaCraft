@@ -5,10 +5,13 @@ using System.Text;
 
 namespace XnaCraft.Engine
 {
-    public enum BlockType
+    public class BlockType
     {
-        Dirt,
-        Grass,
-        Debug,
+        public string Name { get; private set; }
+
+        public BlockType(string name)
+        {
+            Name = name;
+        }
     }
 }

@@ -110,7 +110,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameLogic\Blocks\BasicChunkGenerator.cs" />
     <Compile Include="GameLogic\Blocks\BlockFaceTextures.cs" />
+    <Compile Include="GameLogic\Blocks\BlockTypes.cs" />
     <Compile Include="GameLogic\Blocks\DebugBlockDescriptorFactory.cs" />
     <Compile Include="GameLogic\Blocks\DirtBlockDescriptorFactory.cs" />
     <Compile Include="GameLogic\Blocks\GrassBlockDescriptorFactory.cs" />

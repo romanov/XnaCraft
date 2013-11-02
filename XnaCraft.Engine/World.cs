@@ -9,11 +9,12 @@ namespace XnaCraft.Engine
 {
     public class World
     {
+        private readonly BlockManager _blockManager;
         private readonly Dictionary<Point, Chunk> _chunks = new Dictionary<Point, Chunk>();
 
-        public World()
+        public World(BlockManager blockManager)
         {
-
+            _blockManager = blockManager;
         }
 
         public Chunk GetChunk(int x, int y)
@@ -206,12 +207,7 @@ namespace XnaCraft.Engine
 
             var chunk = GetChunk(cx, cy);
 
-            //var grassDescriptor = new BlockDescriptor(BlockType.Grass,
-            //    BlockFaceTextures.GrassTop,
-            //    BlockFaceTextures.Dirt,
-            //    BlockFaceTextures.GrassSide);
-
-            //chunk.Blocks[bx, by, bz] = grassDescriptor;
+            chunk.Blocks[bx, by, bz] = _blockManager.GetDescriptor(blockType);
 
             Task.Factory.StartNew(() =>
             {

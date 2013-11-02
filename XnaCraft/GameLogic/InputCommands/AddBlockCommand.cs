@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
+using XnaCraft.GameLogic.Blocks;
 
 namespace XnaCraft.GameLogic.InputCommands
 {
@@ -34,7 +35,7 @@ namespace XnaCraft.GameLogic.InputCommands
 
                 if (!_player.BoundingBox.Intersects(block.BoundingBox))
                 {
-                    _world.AddBlock(block.X, block.Y, block.Z, BlockType.Grass);
+                    _world.AddBlock(block.X, block.Y, block.Z, BlockTypes.Grass);
                 }
             }
         }
