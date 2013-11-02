@@ -7,7 +7,7 @@ using XnaCraft.Engine;
 using XnaCraft.Engine.Diagnostics;
 using XnaCraft.Engine.Input;
 
-namespace XnaCraft.GameLogic
+namespace XnaCraft.Game
 {
 
 

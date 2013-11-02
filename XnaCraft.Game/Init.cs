@@ -6,7 +6,7 @@ using XnaCraft.Engine;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace XnaCraft.GameLogic
+namespace XnaCraft.Game
 {
     class Init : IInitLogic
     {

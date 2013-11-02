@@ -7,7 +7,7 @@ using XnaCraft.Engine;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-namespace XnaCraft.GameLogic
+namespace XnaCraft.Game
 {
     class WorldRendering : IRenderLogic
     {

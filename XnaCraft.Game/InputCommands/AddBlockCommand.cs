@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework.Input;
 using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
-using XnaCraft.GameLogic.Blocks;
+using XnaCraft.Game.Blocks;
 
-namespace XnaCraft.GameLogic.InputCommands
+namespace XnaCraft.Game.InputCommands
 {
     class AddBlockCommand : IInputCommand
     {

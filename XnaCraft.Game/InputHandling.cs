@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using XnaCraft.Engine.Input;
 
-namespace XnaCraft.GameLogic
+namespace XnaCraft.Game
 {
     class InputHandling : IInputHandler
     {

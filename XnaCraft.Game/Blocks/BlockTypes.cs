@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using XnaCraft.Engine;
 
-namespace XnaCraft.GameLogic.Blocks
+namespace XnaCraft.Game.Blocks
 {
     public static class BlockTypes
     {

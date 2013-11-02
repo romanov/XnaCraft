@@ -2,7 +2,7 @@
 using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
 
-namespace XnaCraft.GameLogic.InputCommands
+namespace XnaCraft.Game.InputCommands
 {
     class JumpCommand : IInputCommand
     {

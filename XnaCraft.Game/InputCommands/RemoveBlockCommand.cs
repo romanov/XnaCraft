@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
 
-namespace XnaCraft.GameLogic.InputCommands
+namespace XnaCraft.Game.InputCommands
 {
     class RemoveBlockCommand : IInputCommand
     {

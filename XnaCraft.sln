@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaCraftContent", "XnaCraft
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaCraft.Engine", "XnaCraft.Engine\XnaCraft.Engine.csproj", "{F5AC9405-5999-4D37-8B50-E3C5B854984D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XnaCraft.Game", "XnaCraft.Game\XnaCraft.Game.csproj", "{E73EEC25-B3E1-49DD-B05C-B17FD63B252E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,6 +25,10 @@ Global
 		{F5AC9405-5999-4D37-8B50-E3C5B854984D}.Debug|x86.Build.0 = Debug|x86
 		{F5AC9405-5999-4D37-8B50-E3C5B854984D}.Release|x86.ActiveCfg = Release|x86
 		{F5AC9405-5999-4D37-8B50-E3C5B854984D}.Release|x86.Build.0 = Release|x86
+		{E73EEC25-B3E1-49DD-B05C-B17FD63B252E}.Debug|x86.ActiveCfg = Debug|x86
+		{E73EEC25-B3E1-49DD-B05C-B17FD63B252E}.Debug|x86.Build.0 = Debug|x86
+		{E73EEC25-B3E1-49DD-B05C-B17FD63B252E}.Release|x86.ActiveCfg = Release|x86
+		{E73EEC25-B3E1-49DD-B05C-B17FD63B252E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

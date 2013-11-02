@@ -10,11 +10,11 @@ using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
 using Autofac;
 using System.Reflection;
-using XnaCraft.GameLogic.Blocks;
+using XnaCraft.Game.Blocks;
 
 namespace XnaCraft
 {
-    public class XnaCraftGame : Game
+    public class XnaCraftGame : Microsoft.Xna.Framework.Game
     {
         private readonly bool _isFullScreen = false;
 
@@ -51,7 +51,6 @@ namespace XnaCraft
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance(this).As<Game>();
             builder.RegisterInstance(GraphicsDevice).As<GraphicsDevice>();
             builder.RegisterInstance(Content).As<ContentManager>();
             builder.Register(ctx => new SpriteBatch(GraphicsDevice)).As<SpriteBatch>();
@@ -66,7 +65,7 @@ namespace XnaCraft
             builder.RegisterType<WorldGenerator>().SingleInstance();
             builder.RegisterType<BasicChunkGenerator>().As<IChunkGenerator>().InstancePerDependency();
 
-            var assembliesToScan = new[] {"XnaCraft", "XnaCraft.Engine"}.Select(Assembly.Load).ToArray();
+            var assembliesToScan = new[] {"XnaCraft.Engine", "XnaCraft.Game"}.Select(Assembly.Load).ToArray();
 
             builder.RegisterAssemblyTypes(assembliesToScan)
                 .AssignableTo<ILogic>()
@@ -83,7 +82,7 @@ namespace XnaCraft
                 .As<IInputCommand>()
                 .SingleInstance();
 
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            builder.RegisterAssemblyTypes(assembliesToScan)
                 .AssignableTo<IBlockDescriptorFactory>()
                 .As<IBlockDescriptorFactory>()
                 .SingleInstance();

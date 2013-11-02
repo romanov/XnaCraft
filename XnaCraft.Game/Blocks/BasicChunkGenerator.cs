@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using XnaCraft.Engine;
 
-namespace XnaCraft.GameLogic.Blocks
+namespace XnaCraft.Game.Blocks
 {
-    class BasicChunkGenerator : IChunkGenerator
+    public class BasicChunkGenerator : IChunkGenerator
     {
         private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(Utils.GetRandomInteger());
         private readonly BlockManager _blockManager;
