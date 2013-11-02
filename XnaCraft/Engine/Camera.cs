@@ -16,7 +16,6 @@ namespace XnaCraft.Engine
         private float _upDownRotation = MathHelper.ToRadians(-20);
         private Vector3 _direction; 
 
-        private float _moveSpeed = 25.0f;
         private float _rotationSpeed = 0.1f;
 
         public Matrix View { get; set; }

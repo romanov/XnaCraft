@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using XnaCraft.Diagnostics;
+using XnaCraft.Engine.Diagnostics;
+using Microsoft.Xna.Framework.Content;
 
 namespace XnaCraft.Engine
 {
@@ -16,14 +17,13 @@ namespace XnaCraft.Engine
         private Effect _effect;
         private Texture2D _textureAtlas;
 
-        public WorldRenderer(Game game)
+        public WorldRenderer(GraphicsDevice graphicsDevice, ContentManager contentManager, DiagnosticsService diagnosticsService)
         {
-            _graphicsDevice = game.GraphicsDevice;
-            _diagnosticsService = game.GetService<DiagnosticsService>();
+            _graphicsDevice = graphicsDevice;
+            _diagnosticsService = diagnosticsService;
 
-            _effect = game.Content.Load<Effect>("BlockEffect");
-
-            _textureAtlas = game.Content.Load<Texture2D>("blocks");
+            _effect = contentManager.Load<Effect>("BlockEffect");
+            _textureAtlas = contentManager.Load<Texture2D>("blocks");
         }
 
         public void Render(World world, Camera camera)

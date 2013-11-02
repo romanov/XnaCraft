@@ -5,13 +5,14 @@ using System.Text;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using XnaCraft.Engine.Input.Commands;
-using XnaCraft.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
+using XnaCraft.Engine.Diagnostics;
 
 namespace XnaCraft.Engine.Input
 {
     class InputController
     {
-        private readonly Game _game;
+        private readonly GraphicsDevice _graphicsDevice;
         private readonly World _world;
         private readonly Camera _camera;
         private readonly Player _player;
@@ -20,14 +21,13 @@ namespace XnaCraft.Engine.Input
         private readonly List<ICommand> _commands = new List<ICommand>();
         private readonly InputState _inputState = new InputState();
 
-        public InputController(Game game, World world, Camera camera, Player player)
+        public InputController(GraphicsDevice graphicsDevice, World world, Camera camera, Player player, DiagnosticsService diagnosticsService)
         {
-            _game = game;
+            _graphicsDevice = graphicsDevice;
             _world = world;
             _camera = camera;
             _player = player;
-
-            _diagnosticsService = _game.GetService<DiagnosticsService>();
+            _diagnosticsService = diagnosticsService;
 
             _commands.AddRange(new ICommand[]
             {
@@ -101,10 +101,10 @@ namespace XnaCraft.Engine.Input
 
         private Vector2 GetMouseOffset()
         {
-            var mouseOffsetX = _inputState.CurrentMouseState.X - _game.GraphicsDevice.Viewport.Width / 2;
-            var mouseOffsetY = _inputState.CurrentMouseState.Y - _game.GraphicsDevice.Viewport.Height / 2;
+            var mouseOffsetX = _inputState.CurrentMouseState.X - _graphicsDevice.Viewport.Width / 2;
+            var mouseOffsetY = _inputState.CurrentMouseState.Y - _graphicsDevice.Viewport.Height / 2;
 
-            Mouse.SetPosition(_game.GraphicsDevice.Viewport.Width / 2, _game.GraphicsDevice.Viewport.Height / 2);
+            Mouse.SetPosition(_graphicsDevice.Viewport.Width / 2, _graphicsDevice.Viewport.Height / 2);
 
             return new Vector2(mouseOffsetX, mouseOffsetY);
         }

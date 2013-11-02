@@ -5,10 +5,8 @@ using System.Text;
 
 namespace XnaCraft.Engine
 {
-    public enum BlockType
+    interface IBlockDescriptorFactory
     {
-        Dirt,
-        Grass,
-        Debug,
+        BlockDescriptor CreateDescriptor();
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using XnaCraft.Diagnostics;
+using XnaCraft.Engine.Diagnostics;
 
 namespace XnaCraft.Engine
 {
@@ -17,11 +17,8 @@ namespace XnaCraft.Engine
         public const int CHUNK_HEIGHT = 256;
         public const int GRUNT_LEVEL = 128;
 
-        private readonly BlockDescriptor _grassDescriptor;
-        private readonly BlockDescriptor _dirtDescriptor;
-        private readonly BlockDescriptor _debugDescriptor;
-
         private readonly World _world;
+        private readonly BlockManager _blockManager;
         private readonly GraphicsDevice _graphicsDevice;
         private readonly DiagnosticsService _diagnosticsService;
         private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(Utils.GetRandomInteger());
@@ -32,29 +29,12 @@ namespace XnaCraft.Engine
 
         private volatile bool _isRunning = true;
 
-        public WorldGenerator(World world, GraphicsDevice graphicsDevice, ContentManager contentManager, DiagnosticsService diagnosticsService)
+        public WorldGenerator(World world, BlockManager blockManager, GraphicsDevice graphicsDevice, ContentManager contentManager, DiagnosticsService diagnosticsService)
         {
             _world = world;
+            _blockManager = blockManager;
             _graphicsDevice = graphicsDevice;
             _diagnosticsService = diagnosticsService;
-
-            _grassDescriptor = new BlockDescriptor(BlockType.Grass,
-                BlockFaceTexture.GrassTop,
-                BlockFaceTexture.Dirt,
-                BlockFaceTexture.GrassSide);
-
-            _dirtDescriptor = new BlockDescriptor(BlockType.Dirt,
-                BlockFaceTexture.Dirt,
-                BlockFaceTexture.Dirt,
-                BlockFaceTexture.Dirt);
-
-            _debugDescriptor = new BlockDescriptor(BlockType.Dirt,
-                BlockFaceTexture.DebugTop,
-                BlockFaceTexture.DebugBottom,
-                BlockFaceTexture.DebugFront,
-                BlockFaceTexture.DebugBack,
-                BlockFaceTexture.DebugLeft,
-                BlockFaceTexture.DebugRight);
         }
 
         public void StartGeneration()
@@ -172,11 +152,11 @@ namespace XnaCraft.Engine
                         {
                             if (_useDebugTextures)
                             {
-                                chunk[x, y, z] = _debugDescriptor;
+                                chunk[x, y, z] = _blockManager.GetDescriptor(BlockType.Debug);
                             }
                             else
                             {
-                                chunk[x, y, z] = y == height ? _grassDescriptor : _dirtDescriptor;
+                                chunk[x, y, z] = y == height ? _blockManager.GetDescriptor(BlockType.Grass) : _blockManager.GetDescriptor(BlockType.Dirt);
                             }
                         }
                     }

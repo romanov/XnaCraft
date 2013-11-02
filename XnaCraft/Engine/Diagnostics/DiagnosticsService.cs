@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Concurrent;
 
-namespace XnaCraft.Diagnostics
+namespace XnaCraft.Engine.Diagnostics
 {
     class DiagnosticsService
     {
