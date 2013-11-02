@@ -88,7 +88,16 @@ namespace XnaCraft
 
             var container = builder.Build();
 
-            var logicScripts = container.Resolve<IEnumerable<ILogic>>().ToArray();
+            var logicScripts = container.Resolve<IEnumerable<ILogic>>().OrderByDescending(script =>
+            {
+                var attribute =
+                    script.GetType()
+                        .GetCustomAttributes(typeof(PriorityAttribute), false)
+                        .Cast<PriorityAttribute>()
+                        .FirstOrDefault();
+
+                return attribute != null ? attribute.Priority : 0;
+            }) .ToArray();
 
             _initLogicScripts = logicScripts.OfType<IInitLogic>().ToArray();
             _updateLogicScripts = logicScripts.OfType<IUpdateLogic>().ToArray();

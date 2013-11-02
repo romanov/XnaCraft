@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace XnaCraft.Engine.Diagnostics
 {
+    [Priority(Int32.MinValue)]
     class DiagnosticsRenderer : IRenderLogic
     {
         private readonly DiagnosticsService _diagnosticsService;
