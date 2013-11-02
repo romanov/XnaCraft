@@ -64,17 +64,19 @@ namespace XnaCraft
             builder.RegisterType<DiagnosticsService>().SingleInstance();
             builder.RegisterType<WorldGenerator>().SingleInstance();
 
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            var assembliesToScan = new[] {"XnaCraft", "XnaCraft.Engine"}.Select(Assembly.Load).ToArray();
+
+            builder.RegisterAssemblyTypes(assembliesToScan)
                 .AssignableTo<ILogic>()
                 .As<ILogic>()
                 .SingleInstance();
 
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            builder.RegisterAssemblyTypes(assembliesToScan)
                 .AssignableTo<IInputHandler>()
                 .As<IInputHandler>()
                 .SingleInstance();
 
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            builder.RegisterAssemblyTypes(assembliesToScan)
                 .AssignableTo<IInputCommand>()
                 .As<IInputCommand>()
                 .SingleInstance();

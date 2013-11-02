@@ -5,7 +5,7 @@ using System.Text;
 
 namespace XnaCraft.Engine
 {
-    interface IBlockDescriptorFactory
+    public interface IBlockDescriptorFactory
     {
         BlockDescriptor CreateDescriptor();
     }

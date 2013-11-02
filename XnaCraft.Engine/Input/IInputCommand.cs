@@ -5,7 +5,7 @@ using System.Text;
 
 namespace XnaCraft.Engine.Input
 {
-    interface IInputCommand
+    public interface IInputCommand
     {
         bool WasInvoked(InputState context);
 

@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 
 namespace XnaCraft.Engine.Diagnostics
 {
-    class DiagnosticsService
+    public class DiagnosticsService
     {
         ConcurrentDictionary<string, object> _infoValues = new ConcurrentDictionary<string, object>();
 

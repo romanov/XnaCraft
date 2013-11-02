@@ -5,7 +5,7 @@ using System.Text;
 
 namespace XnaCraft.Engine
 {
-    class BlockManager
+    public class BlockManager
     {
         private readonly Dictionary<BlockType, BlockDescriptor> _descriptors;
 

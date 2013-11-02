@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace XnaCraft.Engine.Input
 {
-    class InputController : IUpdateLogic
+    public class InputController : IUpdateLogic
     {
         private readonly IEnumerable<IInputHandler> _inputHandlers;
         private readonly IEnumerable<IInputCommand> _commands;

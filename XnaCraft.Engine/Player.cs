@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace XnaCraft.Engine
 {
-    class Player
+    public class Player
     {
         private float _width = 0.8f;
         private float _height = 1.8f;

@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace XnaCraft.Engine
 {
-    class WorldRenderer : IWorldRenderer
+    public class WorldRenderer : IWorldRenderer
     {
         private readonly GraphicsDevice _graphicsDevice;
         private readonly DiagnosticsService _diagnosticsService;

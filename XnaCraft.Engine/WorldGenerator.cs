@@ -11,7 +11,7 @@ using XnaCraft.Engine.Diagnostics;
 
 namespace XnaCraft.Engine
 {
-    class WorldGenerator
+    public class WorldGenerator
     {
         public const int CHUNK_WIDTH = 16;
         public const int CHUNK_HEIGHT = 256;
