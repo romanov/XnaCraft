@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using XnaCraft.Engine.Messaging;
 
 namespace XnaCraft.Engine.World
 {
     public class World
     {
         private readonly BlockManager _blockManager;
+        private readonly IEventManager _eventManager;
         private readonly Dictionary<Point, Chunk> _chunks = new Dictionary<Point, Chunk>();
 
         public const int ChunkWidth = 16;
         public const int ChunkHeight = 256;
         public const int GroundLevel = 128;
 
-        public World(BlockManager blockManager)
+        public World(BlockManager blockManager, IEventManager eventManager)
         {
             _blockManager = blockManager;
+            _eventManager = eventManager;
         }
 
         public Chunk GetChunk(int x, int y)
@@ -210,6 +213,8 @@ namespace XnaCraft.Engine.World
             var blockDescriptor = _blockManager.GetDescriptor(blockType);
 
             chunk.SetBlock(bx, by, bz, blockDescriptor);
+
+            _eventManager.Publish(new BlockAddedEvent { Chunk = chunk });
         }
 
         public void RemoveBlock(Block block)
@@ -224,6 +229,18 @@ namespace XnaCraft.Engine.World
             var chunk = GetChunk(cx, cy);
 
             chunk.SetBlock(bx, by, bz, null);
+
+            _eventManager.Publish(new BlockRemovedEvent { Chunk = chunk });
         }
+    }
+
+    public class BlockAddedEvent : IEvent
+    {
+        public Chunk Chunk { get; set; }
+    }
+
+    public class BlockRemovedEvent : IEvent
+    {
+        public Chunk Chunk { get; set; }
     }
 }

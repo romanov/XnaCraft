@@ -92,6 +92,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messaging\EventManager.cs" />
+    <Compile Include="Messaging\IEvent.cs" />
+    <Compile Include="Messaging\IEventManager.cs" />
+    <Compile Include="Messaging\ISubscription.cs" />
     <Compile Include="World\BlockDescriptor.cs" />
     <Compile Include="World\BlockFaceTexture.cs" />
     <Compile Include="World\BlockManager.cs" />

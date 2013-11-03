@@ -11,6 +11,7 @@ using XnaCraft.Engine.Input;
 using Autofac;
 using System.Reflection;
 using XnaCraft.Engine.Logic;
+using XnaCraft.Engine.Messaging;
 using XnaCraft.Engine.World;
 using XnaCraft.Game;
 using XnaCraft.Game.Blocks;
@@ -69,6 +70,7 @@ namespace XnaCraft
             builder.RegisterType<BasicChunkGenerator>().As<IChunkGenerator>().InstancePerDependency();
             builder.RegisterType<ChunkBuilder>().As<ChunkBuilder>().SingleInstance();
             builder.RegisterType<ChunkVertexBuilder>().As<IChunkVertexBuilder>().InstancePerDependency();
+            builder.RegisterType<EventManager>().As<IEventManager>().SingleInstance();
 
             var assembliesToScan = new[] {"XnaCraft.Engine", "XnaCraft.Game"}.Select(Assembly.Load).ToArray();
 
