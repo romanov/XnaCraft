@@ -10,6 +10,9 @@ using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
 using Autofac;
 using System.Reflection;
+using XnaCraft.Engine.Logic;
+using XnaCraft.Engine.World;
+using XnaCraft.Game;
 using XnaCraft.Game.Blocks;
 
 namespace XnaCraft
@@ -60,10 +63,12 @@ namespace XnaCraft
             builder.RegisterType<Camera>().SingleInstance();
             builder.RegisterType<BlockManager>().SingleInstance();
             builder.RegisterType<InputController>().SingleInstance();
-            builder.RegisterType<WorldRenderer>().SingleInstance();
+            builder.RegisterType<WorldRenderer>().As<IWorldRenderer>().SingleInstance();
             builder.RegisterType<DiagnosticsService>().SingleInstance();
             builder.RegisterType<WorldGenerator>().SingleInstance();
             builder.RegisterType<BasicChunkGenerator>().As<IChunkGenerator>().InstancePerDependency();
+            builder.RegisterType<ChunkBuilder>().As<ChunkBuilder>().SingleInstance();
+            builder.RegisterType<ChunkVertexBuilder>().As<IChunkVertexBuilder>().InstancePerDependency();
 
             var assembliesToScan = new[] {"XnaCraft.Engine", "XnaCraft.Game"}.Select(Assembly.Load).ToArray();
 

@@ -14,9 +14,10 @@ namespace XnaCraft.Engine
         private Vector3 _position = new Vector3(0, 12, 0);
         private float _leftRightRotation = MathHelper.ToRadians(-135);
         private float _upDownRotation = MathHelper.ToRadians(-20);
-        private Vector3 _direction; 
+        private Vector3 _direction;
+        private Matrix _rotation;
 
-        private float _rotationSpeed = 0.1f;
+        private const float RotationSpeed = 0.1f;
 
         public Matrix View { get; set; }
         public Matrix Projection { get; set; }
@@ -70,19 +71,25 @@ namespace XnaCraft.Engine
             _device = device;
         }
 
-        public void Update(float dx, float dy, Vector3 position)
+        public void MoveTo(Vector3 position)
         {
-            _leftRightRotation -= (dx / 50)  * _rotationSpeed;
-            _upDownRotation -= (dy / 50) * _rotationSpeed;
+            _position = position;
+        }
+
+        public void UpdateRotation(float leftRightDelta, float upDownDelta)
+        {
+            _leftRightRotation -= (leftRightDelta / 50) * RotationSpeed;
+            _upDownRotation -= (upDownDelta / 50) * RotationSpeed;
 
             _upDownRotation = MathHelper.Clamp(_upDownRotation, -MathHelper.PiOver2, MathHelper.PiOver2);
 
-            var rotation = Matrix.CreateRotationX(_upDownRotation) * Matrix.CreateRotationY(_leftRightRotation);
-            _direction = Vector3.Transform(Vector3.Forward, rotation);
+            _rotation = Matrix.CreateRotationX(_upDownRotation) * Matrix.CreateRotationY(_leftRightRotation);
+            _direction = Vector3.Transform(Vector3.Forward, _rotation);
+        }
 
-            _position = position;
-
-            View = Matrix.CreateLookAt(_position, _position + _direction, Vector3.Transform(Vector3.Up, rotation));
+        public void Update()
+        {
+            View = Matrix.CreateLookAt(_position, _position + _direction, Vector3.Transform(Vector3.Up, _rotation));
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, _device.Viewport.AspectRatio, 0.0001f, 1000);
         }
     }

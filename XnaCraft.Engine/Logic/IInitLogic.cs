@@ -1,4 +1,4 @@
-﻿namespace XnaCraft.Engine
+﻿namespace XnaCraft.Engine.Logic
 {
     public interface IInitLogic : ILogic
     {

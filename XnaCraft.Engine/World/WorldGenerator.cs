@@ -1,37 +1,30 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
+using Microsoft.Xna.Framework;
 using XnaCraft.Engine.Diagnostics;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.World
 {
     public class WorldGenerator
     {
-        public const int CHUNK_WIDTH = 16;
-        public const int CHUNK_HEIGHT = 256;
-        public const int GRUNT_LEVEL = 128;
-
         private readonly World _world;
-        private readonly GraphicsDevice _graphicsDevice;
         private readonly IChunkGenerator _chunkGenerator;
+        private readonly ChunkBuilder _chunkBuilder;
         private readonly DiagnosticsService _diagnosticsService;
-
 
         private readonly BlockingCollection<Batch> _batchQueue = new BlockingCollection<Batch>();
 
         private volatile bool _isRunning = true;
 
-        public WorldGenerator(World world, GraphicsDevice graphicsDevice, IChunkGenerator chunkGenerator, DiagnosticsService diagnosticsService)
+        public WorldGenerator(World world, IChunkGenerator chunkGenerator, ChunkBuilder chunkBuilder, DiagnosticsService diagnosticsService)
         {
             _world = world;
-            _graphicsDevice = graphicsDevice;
             _chunkGenerator = chunkGenerator;
+            _chunkBuilder = chunkBuilder;
             _diagnosticsService = diagnosticsService;
         }
 
@@ -43,6 +36,11 @@ namespace XnaCraft.Engine
         public void StopGeneration()
         {
             _isRunning = false;
+        }
+
+        public BlockDescriptor[, ,] GenerateChunk(int cx, int cy)
+        {
+            return _chunkGenerator.Generate(cx, cy);
         }
 
         public void GenerateArea(Point center, int radius, bool rebuildAdjacent = true)
@@ -80,7 +78,7 @@ namespace XnaCraft.Engine
             {
                 if (!_world.HasChunk(chunkPosition.X, chunkPosition.Y))
                 {
-                    var chunk = new Chunk(_graphicsDevice, _world, chunkPosition.X, chunkPosition.Y);
+                    var chunk = new Chunk(chunkPosition.X, chunkPosition.Y);
 
                     _world.AddChunk(chunk.X, chunk.Y, chunk);
 
@@ -112,15 +110,15 @@ namespace XnaCraft.Engine
                 {
                     var adjacentChunks = _world.GetAdjacentChunks(chunk);
 
-                    chunk.Build();
+                    _chunkBuilder.Build(chunk);
 
                     if (batch.RebuildAdjacent)
                     {
                         foreach (var adjacentChunk in adjacentChunks.Values)
                         {
-                            if (!batch.Chunks.Contains(adjacentChunk))
+                            if (!lookup.Contains(adjacentChunk))
                             {
-                                adjacentChunk.Build();
+                                _chunkBuilder.Build(adjacentChunk);
                             }
                         }
                     }
@@ -128,11 +126,6 @@ namespace XnaCraft.Engine
                     _diagnosticsService.SetInfoValue("Queue", --queueLength);
                 }
             }
-        }
-
-        public BlockDescriptor[, ,] GenerateChunk(int cx, int cy)
-        {
-            return _chunkGenerator.Generate(cx, cy);
         }
 
         private class Batch

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using XnaCraft.Engine;
+using XnaCraft.Engine.World;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Game
 {
     public class Player
     {

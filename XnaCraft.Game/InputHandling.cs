@@ -31,7 +31,10 @@ namespace XnaCraft.Game
             var moveVector = GetMoveVector(inputState);
             var mouseOffset = GetMouseOffset(inputState);
 
-            _camera.Update(mouseOffset.X, mouseOffset.Y, _player.Position + new Vector3(0, 0.9f, 0));
+            _camera.MoveTo(_player.Position + new Vector3(0, 0.9f, 0));
+            _camera.UpdateRotation(mouseOffset.X, mouseOffset.Y);
+            _camera.Update();
+
             _player.Update(gameTime, moveVector, _camera.LeftRightRotation);
 
             _diagnosticsService.SetInfoValue("Pos", String.Format("X = {0}, Y = {1}, Z = {2}", _player.Position.X, _player.Position.Y, _player.Position.Z));

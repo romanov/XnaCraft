@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace XnaCraft.Engine
 {
-    struct UVMapping
+    struct UvMapping
     {
         public Vector2 TopLeft;
         public Vector2 TopRight;

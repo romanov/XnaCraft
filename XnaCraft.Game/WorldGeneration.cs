@@ -6,11 +6,11 @@ using Microsoft.Xna.Framework;
 using XnaCraft.Engine;
 using XnaCraft.Engine.Diagnostics;
 using XnaCraft.Engine.Input;
+using XnaCraft.Engine.Logic;
+using XnaCraft.Engine.World;
 
 namespace XnaCraft.Game
 {
-
-
     class WorldGeneration : IUpdateLogic
     {
         private readonly WorldGenerator _worldGenerator;
@@ -28,8 +28,8 @@ namespace XnaCraft.Game
 
         public void OnUpdate(GameTime gameTime)
         {
-            var cx = (int)Math.Floor(_camera.Position.X / WorldGenerator.CHUNK_WIDTH);
-            var cy = (int)Math.Floor(_camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
+            var cx = (int)Math.Floor(_camera.Position.X / World.ChunkWidth);
+            var cy = (int)Math.Floor(_camera.Position.Z / World.ChunkWidth);
 
             _diagnosticsService.SetInfoValue("Chunk", String.Format("X = {0}, Y = {1}", cx, cy));
 

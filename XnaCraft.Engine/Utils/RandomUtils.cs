@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.Utils
 {
-    public static class Utils
+    public static class RandomUtils
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random Random = new Random();
 
         public static int GetRandomInteger() 
         {
-            return _random.Next();
+            return Random.Next();
         }
     }
 }

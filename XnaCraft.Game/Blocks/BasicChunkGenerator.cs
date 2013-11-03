@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using XnaCraft.Engine;
+using XnaCraft.Engine.Utils;
+using XnaCraft.Engine.World;
 
 namespace XnaCraft.Game.Blocks
 {
     public class BasicChunkGenerator : IChunkGenerator
     {
-        private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(Utils.GetRandomInteger());
+        private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(RandomUtils.GetRandomInteger());
         private readonly BlockManager _blockManager;
 
         private readonly bool _useDebugTextures = false;
@@ -21,17 +23,17 @@ namespace XnaCraft.Game.Blocks
         public BlockDescriptor[, ,] Generate(int cx, int cy)
         {
             var f = 2;
-            var chunk = new BlockDescriptor[WorldGenerator.CHUNK_WIDTH, WorldGenerator.CHUNK_HEIGHT, WorldGenerator.CHUNK_WIDTH];
+            var chunk = new BlockDescriptor[World.ChunkWidth, World.ChunkHeight, World.ChunkWidth];
 
-            for (var x = 0; x < WorldGenerator.CHUNK_WIDTH; x++)
+            for (var x = 0; x < World.ChunkWidth; x++)
             {
-                for (var z = 0; z < WorldGenerator.CHUNK_WIDTH; z++)
+                for (var z = 0; z < World.ChunkWidth; z++)
                 {
-                    var height = WorldGenerator.GRUNT_LEVEL + (int)(((_perlinGenerator.Noise(
-                        f * (cx * WorldGenerator.CHUNK_WIDTH + x) / (float)64,
-                        f * (cy * WorldGenerator.CHUNK_WIDTH + z) / (float)64, 0) + 1) / 2) * (64));
+                    var height = World.GroundLevel + (int)(((_perlinGenerator.Noise(
+                        f * (cx * World.ChunkWidth + x) / (float)64,
+                        f * (cy * World.ChunkWidth + z) / (float)64, 0) + 1) / 2) * (64));
 
-                    for (var y = 0; y < WorldGenerator.CHUNK_HEIGHT; y++)
+                    for (var y = 0; y < World.ChunkHeight; y++)
                     {
                         if (y <= height)
                         {

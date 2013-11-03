@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using XnaCraft.Engine;
 using XnaCraft.Engine.Input;
+using XnaCraft.Engine.World;
 
 namespace XnaCraft.Game.InputCommands
 {

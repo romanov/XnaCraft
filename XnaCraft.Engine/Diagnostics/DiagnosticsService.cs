@@ -8,7 +8,7 @@ namespace XnaCraft.Engine.Diagnostics
 {
     public class DiagnosticsService
     {
-        ConcurrentDictionary<string, object> _infoValues = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _infoValues = new ConcurrentDictionary<string, object>();
 
         public IDictionary<string, object> GetInfoValues()
         {

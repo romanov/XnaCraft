@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using XnaCraft.Engine.Logic;
 
 namespace XnaCraft.Engine.Diagnostics
 {
     class FrameCounter : IUpdateLogic, IRenderLogic
     {
-        private int _frameCounter = 0;
+        private int _frameCounter;
         private TimeSpan _elapsedTime = TimeSpan.Zero;
 
         private readonly DiagnosticsService _diagnosticsService;

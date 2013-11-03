@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using XnaCraft.Engine.Logic;
 
 namespace XnaCraft.Engine.Input
 {

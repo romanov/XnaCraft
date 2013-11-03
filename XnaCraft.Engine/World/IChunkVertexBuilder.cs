@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.World
 {
     public interface IChunkVertexBuilder
     {
@@ -18,6 +18,6 @@ namespace XnaCraft.Engine
         void AddLeftFace();
         void AddRightFace();
 
-        VertexBuffer Build(GraphicsDevice device);
+        VertexBuffer Build();
     }
 }

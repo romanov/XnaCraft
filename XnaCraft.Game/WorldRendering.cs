@@ -6,20 +6,22 @@ using Microsoft.Xna.Framework;
 using XnaCraft.Engine;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using XnaCraft.Engine.Logic;
+using XnaCraft.Engine.World;
 
 namespace XnaCraft.Game
 {
     class WorldRendering : IRenderLogic
     {
-        private readonly WorldRenderer _worldRenderer;
+        private readonly IWorldRenderer _worldRenderer;
         private readonly SpriteBatch _spriteBatch;
         private readonly GraphicsDevice _graphicsDevice;
         private readonly World _world;
         private readonly Camera _camera;
 
-        private Texture2D _crosshairTexture;
+        private readonly Texture2D _crosshairTexture;
 
-        public WorldRendering(WorldRenderer worldRenderer, SpriteBatch spriteBatch, 
+        public WorldRendering(IWorldRenderer worldRenderer, SpriteBatch spriteBatch, 
             GraphicsDevice graphicsDevice, ContentManager contentManager, World world, Camera camera)
         {
             _worldRenderer = worldRenderer;

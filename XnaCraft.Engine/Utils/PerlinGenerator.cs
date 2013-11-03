@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.Utils
 {
     // source: http://www.float4x4.net/index.php/2010/06/generating-realistic-and-playable-terrain-height-maps/
     public class PerlinGenerator
@@ -12,7 +12,8 @@ namespace XnaCraft.Engine
         private readonly Random _random;
         private readonly float[] _gradients = new float[GradientSizeTable * 3];
 
-        private readonly byte[] _perm = new byte[] {
+        private readonly byte[] _perm =
+        {
             225,155,210,108,175,199,221,144,203,116, 70,213, 69,158, 33,252,
             5, 82,173,133,222,139,174, 27,  9, 71, 90,246, 75,130, 91,191,
             169,138,  2,151,194,235, 81,  7, 25,113,228,159,205,253,134,142,

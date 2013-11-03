@@ -5,28 +5,39 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.World
 {
-    class BlockPosChunkVertexBuilder : IChunkVertexBuilder
+    public class BlockPosChunkVertexBuilder : IChunkVertexBuilder
     {
-        Vector3 topLeftFront = new Vector3(-0.5f, 0.5f, -0.5f);
-        Vector3 topLeftBack = new Vector3(-0.5f, 0.5f, 0.5f);
-        Vector3 topRightFront = new Vector3(0.5f, 0.5f, -0.5f);
-        Vector3 topRightBack = new Vector3(0.5f, 0.5f, 0.5f);
-        Vector3 bottomLeftFront = new Vector3(-0.5f, -0.5f, -0.5f);
-        Vector3 bottomLeftBack = new Vector3(-0.5f, -0.5f, 0.5f);
-        Vector3 bottomRightFront = new Vector3(0.5f, -0.5f, -0.5f);
-        Vector3 bottomRightBack = new Vector3(0.5f, -0.5f, 0.5f);
+        private readonly GraphicsDevice _graphicsDevice;
 
-        private List<VertexPositionTexture9> _faces = new List<VertexPositionTexture9>();
+        private readonly Vector3 _topLeftFront = new Vector3(-0.5f, 0.5f, -0.5f);
+        private readonly Vector3 _topLeftBack = new Vector3(-0.5f, 0.5f, 0.5f);
+        private readonly Vector3 _topRightFront = new Vector3(0.5f, 0.5f, -0.5f);
+        private readonly Vector3 _topRightBack = new Vector3(0.5f, 0.5f, 0.5f);
+        private readonly Vector3 _bottomLeftFront = new Vector3(-0.5f, -0.5f, -0.5f);
+        private readonly Vector3 _bottomLeftBack = new Vector3(-0.5f, -0.5f, 0.5f);
+        private readonly Vector3 _bottomRightFront = new Vector3(0.5f, -0.5f, -0.5f);
+        private readonly Vector3 _bottomRightBack = new Vector3(0.5f, -0.5f, 0.5f);
+
+        private readonly List<VertexPositionTexture9> _faces = new List<VertexPositionTexture9>();
 
         private Vector3 _position;
-        private BlockDescriptor _descriptor;
 
-        public VertexBuffer Build(GraphicsDevice device)
+        public BlockPosChunkVertexBuilder(GraphicsDevice graphicsDevice)
         {
+            _graphicsDevice = graphicsDevice;
+        }
+
+        public VertexBuffer Build()
+        {
+            if (_graphicsDevice.IsDisposed)
+            {
+                return null;
+            }
+
             var vertices = _faces.ToArray();
-            var buffer = new VertexBuffer(device, VertexPositionTexture9.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
+            var buffer = new VertexBuffer(_graphicsDevice, VertexPositionTexture9.VertexDeclaration, vertices.Length, BufferUsage.WriteOnly);
             
             buffer.SetData(vertices);
 
@@ -36,100 +47,99 @@ namespace XnaCraft.Engine
         public void BeginBlock(Vector3 position, BlockDescriptor descriptor, int[, ,] neighbours)
         {
             _position = position;
-            _descriptor = descriptor;
         }
 
         public void AddFrontFace()
         {
-            var uvMapping = GetUVMapping(_position);
+            var uvMapping = GetUvMapping(_position);
 
             _faces.AddRange(new[]
             {
-                new VertexPositionTexture9(topLeftFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(topRightFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
-                new VertexPositionTexture9(bottomLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(bottomRightFront + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(topRightFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_topLeftFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_topRightFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_bottomLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_bottomRightFront + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_topRightFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
             });
         }
 
         public void AddBackFace()
         {
-            var uvMapping = GetUVMapping(_position);
+            var uvMapping = GetUvMapping(_position);
 
             _faces.AddRange(new[]
             {
-                new VertexPositionTexture9(topLeftBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
-                new VertexPositionTexture9(topRightBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomLeftBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(bottomLeftBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(topRightBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomRightBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_topLeftBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_topRightBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomLeftBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_bottomLeftBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_topRightBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomRightBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
             });
         }
 
         public void AddTopFace()
         {
-            var uvMapping = GetUVMapping(_position);
+            var uvMapping = GetUvMapping(_position);
 
             _faces.AddRange(new[]
             {
-                new VertexPositionTexture9(topLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(topRightBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
-                new VertexPositionTexture9(topLeftBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(topLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(topRightFront + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(topRightBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_topLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_topRightBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_topLeftBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_topLeftFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_topRightFront + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_topRightBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
             });
         }
 
         public void AddBottomFace()
         {
-            var uvMapping = GetUVMapping(_position);
+            var uvMapping = GetUvMapping(_position);
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionTexture9(bottomLeftFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomLeftBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(bottomLeftFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(bottomRightFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_bottomLeftFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomLeftBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_bottomLeftFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_bottomRightFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
             });
         }
 
         public void AddLeftFace()
         {
-            var uvMapping = GetUVMapping(_position);
+            var uvMapping = GetUvMapping(_position);
 
             _faces.AddRange(new[] 
             {
-                new VertexPositionTexture9(topLeftFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
-                new VertexPositionTexture9(bottomLeftBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(bottomLeftFront + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(topLeftBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomLeftBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(topLeftFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_topLeftFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_bottomLeftBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_bottomLeftFront + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_topLeftBack + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomLeftBack + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_topLeftFront + _position, uvMapping.Select(x => x.TopRight).ToArray()),
             });
         }
 
         public void AddRightFace()
         {
-            var uvMapping = GetUVMapping(_position);
+            var uvMapping = GetUvMapping(_position);
 
             _faces.AddRange(new[]
             {
-                new VertexPositionTexture9(topRightFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomRightFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
-                new VertexPositionTexture9(bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
-                new VertexPositionTexture9(topRightBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
-                new VertexPositionTexture9(topRightFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
-                new VertexPositionTexture9(bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_topRightFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomRightFront + _position, uvMapping.Select(x => x.BottomLeft).ToArray()),
+                new VertexPositionTexture9(_bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
+                new VertexPositionTexture9(_topRightBack + _position, uvMapping.Select(x => x.TopRight).ToArray()),
+                new VertexPositionTexture9(_topRightFront + _position, uvMapping.Select(x => x.TopLeft).ToArray()),
+                new VertexPositionTexture9(_bottomRightBack + _position, uvMapping.Select(x => x.BottomRight).ToArray()),
             });
         }
 
-        private UVMapping[] GetUVMapping(Vector3 position)
+        private UvMapping[] GetUvMapping(Vector3 position)
         {
             var xString = position.X.ToString("000");
             var yString = position.Y.ToString("000");
@@ -139,7 +149,7 @@ namespace XnaCraft.Engine
                 + yString.Substring(Math.Max(0, yString.Length - 4), 3)
                 + zString.Substring(Math.Max(0, zString.Length - 4), 3);
 
-            var result = new UVMapping[9];
+            var result = new UvMapping[9];
 
             for (var i = 0; i < 9; i++)
             {
@@ -154,7 +164,7 @@ namespace XnaCraft.Engine
                 var yStart = yOffset * yStep;
                 var yEnd = (yOffset + 1) * yStep;
 
-                var uvMapping = new UVMapping
+                var uvMapping = new UvMapping
                 {
                     TopLeft = new Vector2(xEnd, yStart),
                     TopRight = new Vector2(xStart, yStart),
@@ -182,9 +192,8 @@ namespace XnaCraft.Engine
             Vector2 _textureCoordinate7;
             Vector2 _textureCoordinate8;
 
-            public static readonly VertexElement[] VertexElements = new VertexElement[]
+            public static readonly VertexElement[] VertexElements =
             { 
-        
                 new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
                 new VertexElement(sizeof(float)*3,VertexElementFormat.Vector2,  VertexElementUsage.TextureCoordinate, 0),
                 new VertexElement(sizeof(float)*5,VertexElementFormat.Vector2,  VertexElementUsage.TextureCoordinate, 1),               

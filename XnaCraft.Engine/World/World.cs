@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using System.Threading.Tasks;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.World
 {
     public class World
     {
         private readonly BlockManager _blockManager;
         private readonly Dictionary<Point, Chunk> _chunks = new Dictionary<Point, Chunk>();
+
+        public const int ChunkWidth = 16;
+        public const int ChunkHeight = 256;
+        public const int GroundLevel = 128;
 
         public World(BlockManager blockManager)
         {
@@ -19,16 +22,14 @@ namespace XnaCraft.Engine
 
         public Chunk GetChunk(int x, int y)
         {
-            var chunk = default(Chunk);
+            Chunk chunk;
 
             if (_chunks.TryGetValue(new Point(x, y), out chunk))
             {
                 return chunk.IsGenerated ? chunk : null;
             }
-            else
-            {
-                return null;
-            }
+                
+            return null;
         }
 
         public Dictionary<Point, Chunk> GetAdjacentChunks(Chunk chunk)
@@ -76,14 +77,14 @@ namespace XnaCraft.Engine
 
         public BlockDescriptor GetBlock(Point3 position)
         {
-            var cx = (int)Math.Floor(position.X / (float)WorldGenerator.CHUNK_WIDTH);
-            var cy = (int)Math.Floor(position.Z / (float)WorldGenerator.CHUNK_WIDTH);
+            var cx = (int)Math.Floor(position.X / (float)ChunkWidth);
+            var cy = (int)Math.Floor(position.Z / (float)ChunkWidth);
 
-            var bx = position.X - cx * WorldGenerator.CHUNK_WIDTH;
+            var bx = position.X - cx * ChunkWidth;
             var by = position.Y;
-            var bz = position.Z - cy * WorldGenerator.CHUNK_WIDTH;
+            var bz = position.Z - cy * ChunkWidth;
 
-            if (by >= 0 && by < WorldGenerator.CHUNK_HEIGHT)
+            if (by >= 0 && by < ChunkHeight)
             {
                 var chunk = GetChunk(cx, cy);
 
@@ -109,14 +110,14 @@ namespace XnaCraft.Engine
                 {
                     for (var z = min.Z; z <= max.Z; z++)
                     {
-                        var cx = (int)Math.Floor(x / (float)WorldGenerator.CHUNK_WIDTH);
-                        var cy = (int)Math.Floor(z / (float)WorldGenerator.CHUNK_WIDTH);
+                        var cx = (int)Math.Floor(x / (float)ChunkWidth);
+                        var cy = (int)Math.Floor(z / (float)ChunkWidth);
 
-                        var bx = x - cx * WorldGenerator.CHUNK_WIDTH;
+                        var bx = x - cx * ChunkWidth;
                         var by = y;
-                        var bz = z - cy * WorldGenerator.CHUNK_WIDTH;
+                        var bz = z - cy * ChunkWidth;
 
-                        if (by >= 0 && by < WorldGenerator.CHUNK_HEIGHT)
+                        if (by >= 0 && by < ChunkHeight)
                         {
                             var chunk = GetChunk(cx, cy);
 
@@ -139,15 +140,15 @@ namespace XnaCraft.Engine
             }
         }
 
-        public IEnumerable<Chunk> GetVisibleChunks(Camera camera)
+        public IList<Chunk> GetVisibleChunks(Camera camera)
         {
             var viewFrustrum = new BoundingFrustum(camera.View * camera.Projection);
 
-            var ccx = (int)Math.Floor(camera.Position.X / WorldGenerator.CHUNK_WIDTH);
-            var ccy = (int)Math.Floor(camera.Position.Z / WorldGenerator.CHUNK_WIDTH);
+            var ccx = (int)Math.Floor(camera.Position.X / ChunkWidth);
+            var ccy = (int)Math.Floor(camera.Position.Z / ChunkWidth);
             var radius = 14;
 
-            var chunks = new HashSet<Chunk>();
+            var chunks = new List<Chunk>();
             var radiusSquared = radius * radius;
 
             for (var cx = ccx - radius; cx <= ccx + radius; cx++)
@@ -198,51 +199,31 @@ namespace XnaCraft.Engine
 
         public void AddBlock(int x, int y, int z, BlockType blockType)
         {
-            var cx = (int)Math.Floor(x / (float)WorldGenerator.CHUNK_WIDTH);
-            var cy = (int)Math.Floor(z / (float)WorldGenerator.CHUNK_WIDTH);
+            var cx = (int)Math.Floor(x / (float)ChunkWidth);
+            var cy = (int)Math.Floor(z / (float)ChunkWidth);
 
-            var bx = x - cx * WorldGenerator.CHUNK_WIDTH;
+            var bx = x - cx * ChunkWidth;
             var by = y;
-            var bz = z - cy * WorldGenerator.CHUNK_WIDTH;
+            var bz = z - cy * ChunkWidth;
 
             var chunk = GetChunk(cx, cy);
+            var blockDescriptor = _blockManager.GetDescriptor(blockType);
 
-            chunk.Blocks[bx, by, bz] = _blockManager.GetDescriptor(blockType);
-
-            Task.Factory.StartNew(() =>
-            {
-                var adjacentChunks = GetAdjacentChunks(chunk);
-
-                chunk.Build();
-
-                foreach (var adjacentChunk in adjacentChunks.Values)
-                {
-                    adjacentChunk.Build();
-                }
-            });
+            chunk.SetBlock(bx, by, bz, blockDescriptor);
         }
 
         public void RemoveBlock(Block block)
         {
-            var cx = (int)Math.Floor(block.X / (float)WorldGenerator.CHUNK_WIDTH);
-            var cy = (int)Math.Floor(block.Z / (float)WorldGenerator.CHUNK_WIDTH);
+            var cx = (int)Math.Floor(block.X / (float)ChunkWidth);
+            var cy = (int)Math.Floor(block.Z / (float)ChunkWidth);
 
-            var bx = block.X - cx * WorldGenerator.CHUNK_WIDTH;
+            var bx = block.X - cx * ChunkWidth;
             var by = block.Y;
-            var bz = block.Z - cy * WorldGenerator.CHUNK_WIDTH;
+            var bz = block.Z - cy * ChunkWidth;
 
             var chunk = GetChunk(cx, cy);
 
-            chunk.Blocks[bx, by, bz] = null;
-
-            var adjacentChunks = GetAdjacentChunks(chunk);
-
-            chunk.Build();
-
-            foreach (var adjacentChunk in adjacentChunks.Values)
-            {
-                adjacentChunk.Build();
-            }
+            chunk.SetBlock(bx, by, bz, null);
         }
     }
 }

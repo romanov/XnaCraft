@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.Logic
 {
     public interface IUpdateLogic : ILogic
     {

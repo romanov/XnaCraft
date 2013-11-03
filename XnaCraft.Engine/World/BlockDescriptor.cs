@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.World
 {
     [DebuggerDisplay("{BlockType}")]
     public class BlockDescriptor

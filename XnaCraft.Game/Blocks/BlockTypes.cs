@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using XnaCraft.Engine;
+using XnaCraft.Engine.World;
 
 namespace XnaCraft.Game.Blocks
 {

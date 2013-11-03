@@ -8,7 +8,7 @@ namespace XnaCraft.Engine
 {
     public struct Point3
     {
-        private static Point3 _zero = new Point3();
+        private static readonly Point3 _zero = new Point3();
 
         public int X;
         public int Y;
@@ -77,7 +77,7 @@ namespace XnaCraft.Engine
         {
             unchecked
             {
-                int hash = 17;
+                var hash = 17;
                 hash = hash * 23 + X;
                 hash = hash * 23 + Y;
                 hash = hash * 23 + Z;

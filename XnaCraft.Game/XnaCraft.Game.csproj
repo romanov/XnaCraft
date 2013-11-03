@@ -98,7 +98,8 @@
     <Compile Include="Blocks\DebugBlockDescriptorFactory.cs" />
     <Compile Include="Blocks\DirtBlockDescriptorFactory.cs" />
     <Compile Include="Blocks\GrassBlockDescriptorFactory.cs" />
-    <Compile Include="Init.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="WorldInitialization.cs" />
     <Compile Include="InputCommands\AddBlockCommand.cs" />
     <Compile Include="InputCommands\JumpCommand.cs" />
     <Compile Include="InputCommands\RemoveBlockCommand.cs" />
