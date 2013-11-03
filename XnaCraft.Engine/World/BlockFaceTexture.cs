@@ -7,10 +7,13 @@ namespace XnaCraft.Engine.World
 {
     public class BlockFaceTexture
     {
+        public string Name { get; private set; }
+
         public int Offset { get; private set; }
 
-        public BlockFaceTexture(int offset)
+        public BlockFaceTexture(string name, int offset)
         {
+            Name = name;
             Offset = offset;
         }
     }

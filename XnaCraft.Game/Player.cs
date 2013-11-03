@@ -8,6 +8,8 @@ using XnaCraft.Engine.World;
 
 namespace XnaCraft.Game
 {
+    // TODO: create GameObject class in the Engine based on this class
+    // TODO: physics simulation should be externalized
     public class Player
     {
         private float _width = 0.8f;

@@ -13,7 +13,8 @@ namespace XnaCraft.Game.Blocks
         private readonly PerlinGenerator _perlinGenerator = new PerlinGenerator(RandomUtils.GetRandomInteger());
         private readonly BlockManager _blockManager;
 
-        private readonly bool _useDebugTextures = false;
+        // TODO: move to configuration
+        private const bool UseDebugTextures = false;
 
         public BasicChunkGenerator(BlockManager blockManager)
         {
@@ -22,7 +23,8 @@ namespace XnaCraft.Game.Blocks
 
         public BlockDescriptor[, ,] Generate(int cx, int cy)
         {
-            var f = 2;
+            const int f = 2;
+
             var chunk = new BlockDescriptor[World.ChunkWidth, World.ChunkHeight, World.ChunkWidth];
 
             for (var x = 0; x < World.ChunkWidth; x++)
@@ -37,7 +39,7 @@ namespace XnaCraft.Game.Blocks
                     {
                         if (y <= height)
                         {
-                            if (_useDebugTextures)
+                            if (UseDebugTextures)
                             {
                                 chunk[x, y, z] = _blockManager.GetDescriptor(BlockTypes.Debug);
                             }

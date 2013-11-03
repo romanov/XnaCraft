@@ -18,9 +18,11 @@ using XnaCraft.Game.Blocks;
 
 namespace XnaCraft
 {
+    // TODO: move to Engine, game specific settings should be specified in configuration file and/or configuration classes
     public class XnaCraftGame : Microsoft.Xna.Framework.Game
     {
-        private readonly bool _isFullScreen = false;
+        // TODO: move to configuration
+        private const bool IsFullScreen = false;
 
         private IEnumerable<IInitLogic> _initLogicScripts;
         private IEnumerable<IUpdateLogic> _updateLogicScripts;
@@ -30,7 +32,7 @@ namespace XnaCraft
         {
             var graphics = new GraphicsDeviceManager(this);
 
-            if (_isFullScreen)
+            if (IsFullScreen)
             {
                 graphics.PreferredBackBufferWidth = 1920;
                 graphics.PreferredBackBufferHeight = 1080;
@@ -64,14 +66,17 @@ namespace XnaCraft
             builder.RegisterType<Camera>().SingleInstance();
             builder.RegisterType<BlockManager>().SingleInstance();
             builder.RegisterType<InputController>().SingleInstance();
-            builder.RegisterType<WorldRenderer>().As<IWorldRenderer>().SingleInstance();
             builder.RegisterType<DiagnosticsService>().SingleInstance();
             builder.RegisterType<WorldGenerator>().SingleInstance();
             builder.RegisterType<BasicChunkGenerator>().As<IChunkGenerator>().InstancePerDependency();
             builder.RegisterType<ChunkBuilder>().As<ChunkBuilder>().SingleInstance();
-            builder.RegisterType<ChunkVertexBuilder>().As<IChunkVertexBuilder>().InstancePerDependency();
             builder.RegisterType<EventManager>().As<IEventManager>().SingleInstance();
 
+            // TODO: allow to choose between standard rendering and "block pos" rendering via configuration
+            builder.RegisterType<WorldRenderer>().As<IWorldRenderer>().SingleInstance();
+            builder.RegisterType<ChunkVertexBuilder>().As<IChunkVertexBuilder>().InstancePerDependency();
+
+            // TODO: assembly names should be specified in configuration
             var assembliesToScan = new[] {"XnaCraft.Engine", "XnaCraft.Game"}.Select(Assembly.Load).ToArray();
 
             builder.RegisterAssemblyTypes(assembliesToScan)
@@ -119,6 +124,7 @@ namespace XnaCraft
 
         protected override void OnActivated(object sender, EventArgs args)
         {
+            // TODO: move activation logic script (?)
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             base.OnActivated(sender, args);
