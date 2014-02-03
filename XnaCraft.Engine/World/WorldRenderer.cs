@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using XnaCraft.Engine.Diagnostics;
+using XnaCraft.Engine.Framework;
 
 namespace XnaCraft.Engine.World
 {

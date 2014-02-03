@@ -25,14 +25,14 @@ namespace XnaCraft.Engine.Input
             _inputState.CurrentKeyboardState = Keyboard.GetState();
             _inputState.CurrentMouseState = Mouse.GetState();
 
-            ExecuteLogicScripts(gameTime);
+            ExecuteInputHandlers(gameTime);
             ExecuteCommands();
 
             _inputState.PreviousKeyboardState = _inputState.CurrentKeyboardState;
             _inputState.PreviousMouseState = _inputState.CurrentMouseState;
         }
 
-        private void ExecuteLogicScripts(GameTime gameTime)
+        private void ExecuteInputHandlers(GameTime gameTime)
         {
             foreach (var handler in _inputHandlers)
             {

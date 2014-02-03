@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace XnaCraft.Engine.Utils
+namespace XnaCraft.Engine.Framework
 {
     public static class RandomUtils
     {

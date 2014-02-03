@@ -7,6 +7,7 @@ using XnaCraft.Engine;
 using XnaCraft.Engine.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using XnaCraft.Engine.Framework;
 using XnaCraft.Engine.Input;
 
 namespace XnaCraft.Game
@@ -37,7 +38,7 @@ namespace XnaCraft.Game
 
             _player.Update(gameTime, moveVector, _camera.LeftRightRotation);
 
-            _diagnosticsService.SetInfoValue("Pos", String.Format("X = {0}, Y = {1}, Z = {2}", _player.Position.X, _player.Position.Y, _player.Position.Z));
+            _diagnosticsService.SetInfoValue("Pos", String.Format("X = {0:0.##}, Y = {1:0.##}, Z = {2:0.##}", _player.Position.X, _player.Position.Y, _player.Position.Z));
         }
 
         private Vector3 GetMoveVector(InputState inputState)

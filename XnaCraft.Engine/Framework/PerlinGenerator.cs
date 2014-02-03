@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace XnaCraft.Engine.Utils
+namespace XnaCraft.Engine.Framework
 {
     // source: http://www.float4x4.net/index.php/2010/06/generating-realistic-and-playable-terrain-height-maps/
     public class PerlinGenerator

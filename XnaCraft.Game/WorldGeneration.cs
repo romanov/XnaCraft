@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using XnaCraft.Engine;
 using XnaCraft.Engine.Diagnostics;
-using XnaCraft.Engine.Input;
+using XnaCraft.Engine.Framework;
 using XnaCraft.Engine.Logic;
 using XnaCraft.Engine.World;
 
@@ -62,7 +62,7 @@ namespace XnaCraft.Game
 
             _chunkBuilder.Build(chunk);
 
-            _worldGenerator.GenerateArea(new Point(0, 0), 15, true);
+            _worldGenerator.GenerateArea(new Point(0, 0), 15);
             _worldGenerator.StartGeneration();
         }
 

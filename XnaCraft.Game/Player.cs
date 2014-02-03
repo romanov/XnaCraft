@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using XnaCraft.Engine;
+using XnaCraft.Engine.Logic;
 using XnaCraft.Engine.World;
 
 namespace XnaCraft.Game
@@ -50,7 +51,7 @@ namespace XnaCraft.Game
         {
             var halfWidth = _width / 2;
             var halfHeight = _height / 2;
-
+            
             _boundingBox = new BoundingBox(
                 _position + new Vector3(-halfWidth, -halfHeight, -halfWidth),
                 _position + new Vector3(halfWidth, halfHeight, halfWidth));

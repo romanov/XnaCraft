@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using XnaCraft.Engine.Framework;
 
 namespace XnaCraft.Engine.World
 {

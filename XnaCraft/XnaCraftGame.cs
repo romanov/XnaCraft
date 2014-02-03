@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using XnaCraft.Engine.Diagnostics;
 using XnaCraft.Engine;
+using XnaCraft.Engine.Framework;
 using XnaCraft.Engine.Input;
 using Autofac;
 using System.Reflection;
@@ -124,7 +125,7 @@ namespace XnaCraft
 
         protected override void OnActivated(object sender, EventArgs args)
         {
-            // TODO: move activation logic script (?)
+            // TODO: move to activation logic script (?)
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             base.OnActivated(sender, args);

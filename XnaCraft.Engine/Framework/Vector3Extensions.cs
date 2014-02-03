@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.Framework
 {
     public static class Vector3Extensions
     {

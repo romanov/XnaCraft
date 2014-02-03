@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace XnaCraft.Engine
+namespace XnaCraft.Engine.Framework
 {
     public class Camera
     {
