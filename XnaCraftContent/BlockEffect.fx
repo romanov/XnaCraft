@@ -1,4 +1,4 @@
-// from: http://techcraft.codeplex.com/ (MS-PL)
+// based on: http://techcraft.codeplex.com/ (MS-PL)
 
 float4x4 World;
 float4x4 View;
