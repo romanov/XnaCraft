@@ -5,7 +5,7 @@ Experimental voxel engine written in C#/XNA with a Minecraft-like game as a proo
 
 TODO
 ====
- - proper game objects with physics symulation
+ - proper game objects with physics simulation
  - skyboxes
  - more block types with ability to switch between them
  - configurability
