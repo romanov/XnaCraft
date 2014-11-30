@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using XnaCraft.Engine.Diagnostics;
-using XnaCraft.Engine;
 using XnaCraft.Engine.Framework;
 using XnaCraft.Engine.Input;
 using Autofac;
@@ -23,7 +22,7 @@ namespace XnaCraft
     public class XnaCraftGame : Microsoft.Xna.Framework.Game
     {
         // TODO: move to configuration
-        private const bool IsFullScreen = false;
+        private const bool IsFullScreen = true;
 
         private IEnumerable<IInitLogic> _initLogicScripts;
         private IEnumerable<IUpdateLogic> _updateLogicScripts;
@@ -37,7 +36,7 @@ namespace XnaCraft
             {
                 graphics.PreferredBackBufferWidth = 1920;
                 graphics.PreferredBackBufferHeight = 1080;
-                graphics.IsFullScreen = true;
+                graphics.IsFullScreen = false;
             }
             else
             {
@@ -78,7 +77,7 @@ namespace XnaCraft
             builder.RegisterType<ChunkVertexBuilder>().As<IChunkVertexBuilder>().InstancePerDependency();
 
             // TODO: assembly names should be specified in configuration
-            var assembliesToScan = new[] {"XnaCraft.Engine", "XnaCraft.Game"}.Select(Assembly.Load).ToArray();
+            var assembliesToScan = new[] { "XnaCraft.Engine", "XnaCraft.Game" }.Select(Assembly.Load).ToArray();
 
             builder.RegisterAssemblyTypes(assembliesToScan)
                 .AssignableTo<ILogic>()
@@ -111,7 +110,7 @@ namespace XnaCraft
                         .FirstOrDefault();
 
                 return attribute != null ? attribute.Priority : 0;
-            }) .ToArray();
+            }).ToArray();
 
             _initLogicScripts = logicScripts.OfType<IInitLogic>().ToArray();
             _updateLogicScripts = logicScripts.OfType<IUpdateLogic>().ToArray();
@@ -126,7 +125,7 @@ namespace XnaCraft
         protected override void OnActivated(object sender, EventArgs args)
         {
             // TODO: move to activation logic script (?)
-            Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+           // Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             base.OnActivated(sender, args);
         }

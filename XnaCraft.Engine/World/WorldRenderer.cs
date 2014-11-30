@@ -40,8 +40,8 @@ namespace XnaCraft.Engine.World
             _effect.Parameters["AmbientColor"].SetValue(Color.White.ToVector4());
             _effect.Parameters["AmbientIntensity"].SetValue(0.8f);
             _effect.Parameters["FogColor"].SetValue(Color.Gray.ToVector4());
-            _effect.Parameters["FogNear"].SetValue(150);
-            _effect.Parameters["FogFar"].SetValue(200);
+           // _effect.Parameters["FogNear"].SetValue(150);
+            //_effect.Parameters["FogFar"].SetValue(200);
             _effect.Parameters["BlockTexture"].SetValue(_textureAtlas);
 
             _effect.CurrentTechnique.Passes[0].Apply();
@@ -55,7 +55,8 @@ namespace XnaCraft.Engine.World
             {
                 faces += chunk.Buffer.VertexCount / 3;
                 _graphicsDevice.SetVertexBuffer(chunk.Buffer);
-                _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, chunk.Buffer.VertexCount / 3);
+                //_graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, chunk.Buffer.VertexCount / 3);
+                _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, chunk.Buffer.VertexCount);
             }
 
             _diagnosticsService.SetInfoValue("Faces", faces);
